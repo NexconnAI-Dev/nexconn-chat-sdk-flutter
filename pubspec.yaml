@@ -1,5 +1,5 @@
 name: ai_nexconn_chat_plugin
-description: A starting point for Dart libraries or applications.
+description: A Flutter plugin for integrating Nexconn Chat SDK features into your application.
 version: 26.2.0
 repository: https://github.com/NexconnAI-Dev/nexconn-chat-sdk-flutter
 
