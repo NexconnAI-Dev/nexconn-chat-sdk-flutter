@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        maven {url  "https://maven.rongcloud.cn/repository/maven-releases/"}
+        // 华为推送
+        maven { url 'https://developer.huawei.com/repo/' }
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath('com.android.tools.build:gradle:8.9.1')
+        classpath("com.huawei.agconnect:agcp:1.9.1.301")
+    }
+}
+
+allprojects {
+    repositories {
+        maven {url  "https://maven.rongcloud.cn/repository/maven-releases/"}
+
+        google()
+        mavenCentral()
+        // 华为推送
+        maven {url 'https://developer.huawei.com/repo/'}
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

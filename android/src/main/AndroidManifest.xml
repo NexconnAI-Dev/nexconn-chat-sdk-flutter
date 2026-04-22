@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="ai.nexconn.chat_plugin">
+  <application>
+    <meta-data
+      android:name="rc.nexconnchatflutter"
+      android:value="ai.nexconn.chat_plugin.VersionUpload" />
+  </application>
+</manifest>
