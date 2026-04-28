@@ -31,7 +31,7 @@ class _TagPageState extends State<TagPage> {
   Future<Tag?> _fetchTag() async {
     final args = await showParamsDialog(
       context,
-      title: '输入 TagId',
+      title: 'Enter TagId',
       params: [
         (label: 'TagId', hint: _currentTag?.tagId ?? 'tagId', isNumber: false)
       ],
@@ -62,7 +62,7 @@ class _TagPageState extends State<TagPage> {
   void _createTag() async {
     final args = await showParamsDialog(
       context,
-      title: '创建标签',
+      title: 'Create Tag',
       params: [
         (label: 'TagId', hint: 'tagId', isNumber: false),
         (label: 'TagName', hint: 'tagName', isNumber: false),
@@ -104,7 +104,7 @@ class _TagPageState extends State<TagPage> {
   void _deleteTag() async {
     final args = await showParamsDialog(
       context,
-      title: '删除标签',
+      title: 'Delete Tag',
       params: [
         (label: 'TagId', hint: _currentTag?.tagId ?? 'tagId', isNumber: false),
       ],
@@ -137,7 +137,7 @@ class _TagPageState extends State<TagPage> {
     final selectedTag = tag!;
     final args = await showParamsDialog(
       context,
-      title: '更新标签名',
+      title: 'Update Tag Name',
       params: [(label: 'NewName', hint: 'new name', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -209,7 +209,7 @@ class _TagPageState extends State<TagPage> {
     final selectedTag = tag!;
     final args = await showParamsDialog(
       context,
-      title: '获取标签未读数',
+      title: 'Get Tag Unread Count',
       params: [(label: 'ContainNoDisturb(0/1)', hint: '0', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -245,7 +245,7 @@ class _TagPageState extends State<TagPage> {
     final selectedTag = tag!;
     final args = await showParamsDialog(
       context,
-      title: '获取标签下的会话',
+      title: 'Get Channels in Tag',
       params: [
         (label: 'PageSize', hint: '20', isNumber: true),
       ],
@@ -276,7 +276,7 @@ class _TagPageState extends State<TagPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('标签相关'),
+        title: const Text('Tag'),
         actions: [
           if (_currentTag != null)
             Padding(
@@ -290,27 +290,27 @@ class _TagPageState extends State<TagPage> {
       body: ListView(
         children: [
           ApiSection(
-            title: '标签管理',
+            title: 'Tag Management',
             children: [
-              ApiButton(label: '创建标签', onPressed: _createTag),
-              ApiButton(label: '获取所有标签', onPressed: _getTags),
-              ApiButton(label: '删除标签', onPressed: _deleteTag),
-              ApiButton(label: '更新标签名', onPressed: _updateTag),
+              ApiButton(label: 'Create Tag', onPressed: _createTag),
+              ApiButton(label: 'Get All Tags', onPressed: _getTags),
+              ApiButton(label: 'Delete Tag', onPressed: _deleteTag),
+              ApiButton(label: 'Update Tag Name', onPressed: _updateTag),
             ],
           ),
           ApiSection(
-            title: '标签与会话',
+            title: 'Tag & Channels',
             children: [
-              ApiButton(label: '添加会话到标签', onPressed: _addChannel),
-              ApiButton(label: '从标签移除会话', onPressed: _deleteChannelFromTag),
-              ApiButton(label: '获取标签下会话', onPressed: _tagChannelsQuery),
+              ApiButton(label: 'Add Channel to Tag', onPressed: _addChannel),
+              ApiButton(label: 'Remove Channel from Tag', onPressed: _deleteChannelFromTag),
+              ApiButton(label: 'Tag Channels Query', onPressed: _tagChannelsQuery),
             ],
           ),
           ApiSection(
-            title: '未读数',
+            title: 'Unread Count',
             children: [
-              ApiButton(label: '获取标签未读数', onPressed: _getUnreadCount),
-              ApiButton(label: '清除标签未读数', onPressed: _clearUnreadCount),
+              ApiButton(label: 'Get Tag Unread Count', onPressed: _getUnreadCount),
+              ApiButton(label: 'Clear Tag Unread Count', onPressed: _clearUnreadCount),
             ],
           ),
         ],

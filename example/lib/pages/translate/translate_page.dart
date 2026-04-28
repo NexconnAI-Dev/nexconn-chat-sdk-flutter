@@ -13,7 +13,7 @@ class _TranslatePageState extends State<TranslatePage> {
   void _translateTexts() async {
     final args = await showParamsDialog(
       context,
-      title: '翻译文本',
+      title: 'Translate Texts',
       params: [
         (label: 'Texts(comma)', hint: 'hello,world', isNumber: false),
       ],
@@ -34,7 +34,7 @@ class _TranslatePageState extends State<TranslatePage> {
   void _translateMessages() async {
     final args = await showParamsDialog(
       context,
-      title: '翻译消息',
+      title: 'Translate Messages',
       params: [
         (label: 'MessageId', hint: 'messageId', isNumber: false),
       ],
@@ -56,7 +56,7 @@ class _TranslatePageState extends State<TranslatePage> {
   void _setTranslationLanguage() async {
     final args = await showParamsDialog(
       context,
-      title: '设置翻译目标语言',
+      title: 'Set Translation Target Language',
       params: [(label: 'Language', hint: 'zh-Hans', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -87,7 +87,7 @@ class _TranslatePageState extends State<TranslatePage> {
   void _setAutoTranslateEnabled() async {
     final args = await showParamsDialog(
       context,
-      title: '设置自动翻译',
+      title: 'Set Auto Translate',
       params: [(label: 'Enable(0/1)', hint: '1', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -120,7 +120,7 @@ class _TranslatePageState extends State<TranslatePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '设置会话翻译策略',
+      title: 'Set Channel Translate Strategy',
       params: [
         (label: 'Strategy(0=default,1=on,2=off)', hint: '1', isNumber: true),
       ],
@@ -156,25 +156,25 @@ class _TranslatePageState extends State<TranslatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('翻译相关')),
+      appBar: AppBar(title: const Text('Translate')),
       body: ListView(
         children: [
           ApiSection(
-            title: '翻译操作',
+            title: 'Translation Actions',
             children: [
-              ApiButton(label: '翻译文本', onPressed: _translateTexts),
-              ApiButton(label: '翻译消息', onPressed: _translateMessages),
+              ApiButton(label: 'Translate Texts', onPressed: _translateTexts),
+              ApiButton(label: 'Translate Messages', onPressed: _translateMessages),
             ],
           ),
           ApiSection(
-            title: '翻译配置',
+            title: 'Translation Settings',
             children: [
-              ApiButton(label: '设置翻译语言', onPressed: _setTranslationLanguage),
-              ApiButton(label: '获取翻译语言', onPressed: _getTranslationLanguage),
+              ApiButton(label: 'Set Translation Language', onPressed: _setTranslationLanguage),
+              ApiButton(label: 'Get Translation Language', onPressed: _getTranslationLanguage),
               ApiButton(
-                  label: '开启/关闭自动翻译', onPressed: _setAutoTranslateEnabled),
-              ApiButton(label: '获取自动翻译状态', onPressed: _getAutoTranslateEnabled),
-              ApiButton(label: '设置会话翻译策略', onPressed: _setTranslateStrategy),
+                  label: 'Set Auto Translate Enabled', onPressed: _setAutoTranslateEnabled),
+              ApiButton(label: 'Get Auto Translate Enabled', onPressed: _getAutoTranslateEnabled),
+              ApiButton(label: 'Set Channel Translate Strategy', onPressed: _setTranslateStrategy),
             ],
           ),
         ],

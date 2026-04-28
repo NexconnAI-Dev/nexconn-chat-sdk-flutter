@@ -16,7 +16,7 @@ class _ChannelPageState extends State<ChannelPage> {
   ) {
     final value = int.tryParse(rawLevel ?? '');
     if (value == null || value < 0 || value > 4) {
-      showResult('$action [onError]', {'error': 'Level 仅支持 0-4'});
+      showResult('$action [onError]', {'error': 'Level only supports 0-4'});
       return null;
     }
     return ChannelNoDisturbLevel.values[value];
@@ -83,7 +83,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '置顶',
+      title: 'Pin',
       params: [(label: 'UpdateOperationTime(0/1)', hint: '1', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -137,7 +137,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '保存草稿',
+      title: 'Save Draft',
       params: [(label: 'Draft', hint: 'draft text', isNumber: false)],
       trimValues: false,
     );
@@ -178,7 +178,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '设置免打扰级别',
+      title: 'Set No-Disturb Level',
       params: [(label: 'Level(0-4)', hint: '2', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -209,7 +209,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (types == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '获取会话列表',
+      title: 'Get Channel List',
       params: [
         (label: 'ChannelId', hint: '', isNumber: false),
         (label: 'SubChannelId(optional)', hint: '', isNumber: false),
@@ -311,7 +311,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (types == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '批量删除会话',
+      title: 'Batch Delete Channels',
       params: [
         (label: 'ChannelId', hint: '', isNumber: false),
         (label: 'SubChannelId(optional)', hint: '', isNumber: false),
@@ -357,7 +357,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (type == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '设置会话类型免打扰',
+      title: 'Set Channel-Type No-Disturb',
       params: [(label: 'Level(0-4)', hint: '2', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -381,7 +381,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (types == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '搜索会话',
+      title: 'Search Channels',
       params: [(label: 'Keyword', hint: 'keyword', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -437,7 +437,7 @@ class _ChannelPageState extends State<ChannelPage> {
     if (types == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '创建会话列表查询',
+      title: 'Create Channels Query',
       params: [(label: 'Count', hint: '20', isNumber: true)],
     );
     if (args == null || !mounted) return;
@@ -466,11 +466,11 @@ class _ChannelPageState extends State<ChannelPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Channel 相关')),
+      appBar: AppBar(title: const Text('Channel')),
       body: ListView(
         children: [
           ApiSection(
-            title: '单个会话操作',
+            title: 'Single Channel Actions',
             children: [
               ApiButton(label: 'reload', onPressed: _reload),
               ApiButton(
@@ -489,7 +489,7 @@ class _ChannelPageState extends State<ChannelPage> {
             ],
           ),
           ApiSection(
-            title: '批量/全局操作',
+            title: 'Batch/Global Actions',
             children: [
               ApiButton(label: 'getChannels', onPressed: _getChannels),
               ApiButton(

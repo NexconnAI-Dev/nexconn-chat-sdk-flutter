@@ -19,14 +19,14 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static final _sections = [
-    _Section(title: '连接相关', page: const ConnectPage()),
-    _Section(title: 'Channel 会话', page: const ChannelPage()),
-    _Section(title: '消息相关', page: const MessagePage()),
-    _Section(title: '群组相关', page: const GroupPage()),
-    _Section(title: '聊天室(OpenChannel)', page: const OpenChannelPage()),
-    _Section(title: '标签(Tag)', page: const TagPage()),
-    _Section(title: '翻译', page: const TranslatePage()),
-    _Section(title: '用户/好友', page: const UserPage()),
+    _Section(title: 'Connection', page: const ConnectPage()),
+    _Section(title: 'Channel', page: const ChannelPage()),
+    _Section(title: 'Message', page: const MessagePage()),
+    _Section(title: 'Group', page: const GroupPage()),
+    _Section(title: 'Open Channel', page: const OpenChannelPage()),
+    _Section(title: 'Tag', page: const TagPage()),
+    _Section(title: 'Translate', page: const TranslatePage()),
+    _Section(title: 'User/Friend', page: const UserPage()),
   ];
 
   @override
@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.list_alt),
-            tooltip: '查看结果日志',
+            tooltip: 'View Result Logs',
             onPressed: () {
               Navigator.push(
                 context,

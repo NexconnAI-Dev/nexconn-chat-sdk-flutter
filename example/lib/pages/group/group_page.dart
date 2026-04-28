@@ -63,7 +63,7 @@ class _GroupPageState extends State<GroupPage> {
   Future<String?> _pickGroupId() async {
     final args = await showParamsDialog(
       context,
-      title: '输入群组ID',
+      title: 'Enter Group ID',
       params: [(label: 'GroupId', hint: 'groupId', isNumber: false)],
     );
     return args?['GroupId'];
@@ -72,7 +72,7 @@ class _GroupPageState extends State<GroupPage> {
   void _createGroup() async {
     final args = await showParamsDialog(
       context,
-      title: '创建群组',
+      title: 'Create Group',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'GroupName', hint: 'groupName', isNumber: false),
@@ -198,7 +198,7 @@ class _GroupPageState extends State<GroupPage> {
   void _updateInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '更新群组信息',
+      title: 'Update Group Info',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'GroupName', hint: 'new name', isNumber: false),
@@ -301,7 +301,7 @@ class _GroupPageState extends State<GroupPage> {
   void _kickMembers() async {
     final args = await showParamsDialog(
       context,
-      title: '踢出群成员',
+      title: 'Kick Group Members',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -354,7 +354,7 @@ class _GroupPageState extends State<GroupPage> {
   void _inviteUsers() async {
     final args = await showParamsDialog(
       context,
-      title: '邀请用户入群',
+      title: 'Invite Users to Group',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -378,7 +378,7 @@ class _GroupPageState extends State<GroupPage> {
   void _acceptInvite() async {
     final args = await showParamsDialog(
       context,
-      title: '接受群邀请',
+      title: 'Accept Group Invite',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'InviterId', hint: 'inviter userId', isNumber: false),
@@ -399,7 +399,7 @@ class _GroupPageState extends State<GroupPage> {
   void _refuseInvite() async {
     final args = await showParamsDialog(
       context,
-      title: '拒绝群邀请',
+      title: 'Refuse Group Invite',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'InviterId', hint: 'inviter userId', isNumber: false),
@@ -425,7 +425,7 @@ class _GroupPageState extends State<GroupPage> {
   void _transferOwner() async {
     final args = await showParamsDialog(
       context,
-      title: '转让群主',
+      title: 'Transfer Group Ownership',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'NewOwnerId', hint: 'new owner userId', isNumber: false),
@@ -452,7 +452,7 @@ class _GroupPageState extends State<GroupPage> {
   void _addAdmins() async {
     final args = await showParamsDialog(
       context,
-      title: '设置群管理员',
+      title: 'Add Group Admins',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -477,7 +477,7 @@ class _GroupPageState extends State<GroupPage> {
   void _removeAdmins() async {
     final args = await showParamsDialog(
       context,
-      title: '取消群管理员',
+      title: 'Remove Group Admins',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -502,7 +502,7 @@ class _GroupPageState extends State<GroupPage> {
   void _setMemberInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '设置群成员信息',
+      title: 'Set Group Member Info',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserId', hint: 'userId', isNumber: false),
@@ -526,7 +526,7 @@ class _GroupPageState extends State<GroupPage> {
   void _getMembers() async {
     final args = await showParamsDialog(
       context,
-      title: '获取群成员信息',
+      title: 'Get Group Members Info',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -558,7 +558,7 @@ class _GroupPageState extends State<GroupPage> {
   void _addFavorites() async {
     final args = await showParamsDialog(
       context,
-      title: '关注群成员',
+      title: 'Add Favorites',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -583,7 +583,7 @@ class _GroupPageState extends State<GroupPage> {
   void _removeFavorites() async {
     final args = await showParamsDialog(
       context,
-      title: '取消关注群成员',
+      title: 'Remove Favorites',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
@@ -608,7 +608,7 @@ class _GroupPageState extends State<GroupPage> {
   void _getGroupsInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '获取群组信息',
+      title: 'Get Group Info',
       params: [(label: 'GroupIds(comma)', hint: 'gid1,gid2', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -633,7 +633,7 @@ class _GroupPageState extends State<GroupPage> {
   void _getGroupApplications() async {
     final args = await showParamsDialog(
       context,
-      title: '获取群申请列表',
+      title: 'Get Group Applications',
       params: [
         (label: 'PageSize', hint: '20', isNumber: true),
         (label: 'Ascending(0=desc,1=asc)', hint: '(optional)', isNumber: true),
@@ -672,7 +672,7 @@ class _GroupPageState extends State<GroupPage> {
   void _groupMembersByRoleQuery() async {
     final args = await showParamsDialog(
       context,
-      title: '按角色获取群成员',
+      title: 'Get Group Members by Role',
       params: [
         (label: 'GroupId', hint: 'groupId', isNumber: false),
         (label: 'Role(0=owner,1=admin,2=member)', hint: '2', isNumber: true),
@@ -715,7 +715,7 @@ class _GroupPageState extends State<GroupPage> {
   void _joinedGroupsQuery() async {
     final args = await showParamsDialog(
       context,
-      title: '查询已加入群组',
+      title: 'Joined Groups Query',
       params: [
         (label: 'PageSize', hint: '20', isNumber: true),
         (label: 'Ascending(0=desc,1=asc)', hint: '(optional)', isNumber: true),
@@ -750,22 +750,22 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('群组相关')),
+      appBar: AppBar(title: const Text('Group')),
       body: ListView(
         children: [
           ApiSection(
-            title: '群组管理',
+            title: 'Group Management',
             children: [
-              ApiButton(label: '创建群组', onPressed: _createGroup),
-              ApiButton(label: '更新群组信息', onPressed: _updateInfo),
-              ApiButton(label: '解散群组', onPressed: _dismissGroup),
-              ApiButton(label: '退出群组', onPressed: _leaveGroup),
-              ApiButton(label: '获取群组信息', onPressed: _getGroupsInfo),
+              ApiButton(label: 'Create Group', onPressed: _createGroup),
+              ApiButton(label: 'Update Group Info', onPressed: _updateInfo),
+              ApiButton(label: 'Dismiss Group', onPressed: _dismissGroup),
+              ApiButton(label: 'Leave Group', onPressed: _leaveGroup),
+              ApiButton(label: 'Get Group Info', onPressed: _getGroupsInfo),
               ApiButton(
-                  label: '设置群备注',
+                  label: 'Set Group Remark',
                   onPressed: () async {
                     final args = await showParamsDialog(context,
-                        title: '设置群备注',
+                        title: 'Set Group Remark',
                         params: [
                           (label: 'GroupId', hint: 'groupId', isNumber: false),
                           (label: 'Remark', hint: 'remark', isNumber: false),
@@ -784,26 +784,26 @@ class _GroupPageState extends State<GroupPage> {
             ],
           ),
           ApiSection(
-            title: '成员管理',
+            title: 'Member Management',
             children: [
-              ApiButton(label: '邀请用户', onPressed: _inviteUsers),
-              ApiButton(label: '接受群邀请', onPressed: _acceptInvite),
-              ApiButton(label: '拒绝群邀请', onPressed: _refuseInvite),
-              ApiButton(label: '踢出成员', onPressed: _kickMembers),
-              ApiButton(label: '设置管理员', onPressed: _addAdmins),
-              ApiButton(label: '取消管理员', onPressed: _removeAdmins),
-              ApiButton(label: '设置成员信息', onPressed: _setMemberInfo),
-              ApiButton(label: '获取成员信息', onPressed: _getMembers),
-              ApiButton(label: '转让群主', onPressed: _transferOwner),
+              ApiButton(label: 'Invite Users', onPressed: _inviteUsers),
+              ApiButton(label: 'Accept Group Invite', onPressed: _acceptInvite),
+              ApiButton(label: 'Refuse Group Invite', onPressed: _refuseInvite),
+              ApiButton(label: 'Kick Members', onPressed: _kickMembers),
+              ApiButton(label: 'Add Admins', onPressed: _addAdmins),
+              ApiButton(label: 'Remove Admins', onPressed: _removeAdmins),
+              ApiButton(label: 'Set Group Member Info', onPressed: _setMemberInfo),
+              ApiButton(label: 'Get Group Members Info', onPressed: _getMembers),
+              ApiButton(label: 'Transfer Group Ownership', onPressed: _transferOwner),
             ],
           ),
           ApiSection(
-            title: '关注/收藏',
+            title: 'Favorites',
             children: [
-              ApiButton(label: '关注成员', onPressed: _addFavorites),
-              ApiButton(label: '取消关注', onPressed: _removeFavorites),
+              ApiButton(label: 'Add Favorites', onPressed: _addFavorites),
+              ApiButton(label: 'Remove Favorites', onPressed: _removeFavorites),
               ApiButton(
-                  label: '获取关注列表',
+                  label: 'Get Favorites',
                   onPressed: () async {
                     final groupId = await _pickGroupId();
                     if (groupId == null || !mounted) return;
@@ -824,15 +824,15 @@ class _GroupPageState extends State<GroupPage> {
             ],
           ),
           ApiSection(
-            title: '查询',
+            title: 'Query',
             children: [
-              ApiButton(label: '已加入群列表', onPressed: _joinedGroupsQuery),
-              ApiButton(label: '按角色查成员', onPressed: _groupMembersByRoleQuery),
+              ApiButton(label: 'Joined Groups Query', onPressed: _joinedGroupsQuery),
+              ApiButton(label: 'Group Members by Role Query', onPressed: _groupMembersByRoleQuery),
               ApiButton(
-                  label: '搜索已加入群',
+                  label: 'Search Joined Groups',
                   onPressed: () async {
                     final args = await showParamsDialog(context,
-                        title: '搜索已加入群',
+                        title: 'Search Joined Groups',
                         params: [
                           (
                             label: 'GroupName',
@@ -878,7 +878,7 @@ class _GroupPageState extends State<GroupPage> {
                       },
                     );
                   }),
-              ApiButton(label: '获取群申请', onPressed: _getGroupApplications),
+              ApiButton(label: 'Get Group Applications', onPressed: _getGroupApplications),
             ],
           ),
         ],

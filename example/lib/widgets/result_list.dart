@@ -61,7 +61,7 @@ class _ResultListPageState extends State<ResultListPage> {
     final text = '[${item.timestamp}] ${item.title}\n${item.result}';
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('已复制'), duration: Duration(seconds: 1)),
+      const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
     );
   }
 
@@ -69,7 +69,7 @@ class _ResultListPageState extends State<ResultListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('接口调用结果'),
+        title: const Text('API Call Results'),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -82,7 +82,7 @@ class _ResultListPageState extends State<ResultListPage> {
         builder: (context, _) {
           final items = ResultNotifier.instance.items;
           if (items.isEmpty) {
-            return const Center(child: Text('暂无结果'));
+            return const Center(child: Text('No results yet'));
           }
           return ListView.builder(
             itemCount: items.length,
@@ -110,7 +110,7 @@ class _ResultListPageState extends State<ResultListPage> {
                           child: IconButton(
                             icon: const Icon(Icons.copy, size: 16),
                             onPressed: () => _copyToClipboard(item),
-                            tooltip: '复制',
+                            tooltip: 'Copy',
                             padding: const EdgeInsets.all(8),
                             constraints: const BoxConstraints(),
                           ),

@@ -54,7 +54,7 @@ class _MessagePageState extends State<MessagePage> {
       case '2':
         final userId = (args[_mentionUserIdLabel] ?? '').trim();
         if (userId.isEmpty) {
-          showResult('$action [onError]', {'error': 'MentionUserId 不能为空'});
+          showResult('$action [onError]', {'error': 'MentionUserId cannot be empty'});
           return (value: null, isValid: false);
         }
         return (
@@ -65,7 +65,7 @@ class _MessagePageState extends State<MessagePage> {
           isValid: true,
         );
       default:
-        showResult('$action [onError]', {'error': 'MentionType 仅支持 0/1/2'});
+        showResult('$action [onError]', {'error': 'MentionType only supports 0/1/2'});
         return (value: null, isValid: false);
     }
   }
@@ -86,7 +86,7 @@ class _MessagePageState extends State<MessagePage> {
     } catch (e) {
       if (mounted) {
         showResult('$action [onError]', {
-          'error': 'FieldsJson 必须是 JSON 对象',
+          'error': 'FieldsJson must be a JSON object',
           'details': '$e',
         });
       }
@@ -120,7 +120,7 @@ class _MessagePageState extends State<MessagePage> {
             .toList();
     if (items.isEmpty) {
       showResult('$action [onError]', {
-        'error': 'SearchableWords 不能为空；请传逗号分隔字符串或 JSON 数组',
+        'error': 'SearchableWords cannot be empty; pass a comma-separated string or JSON array',
       });
       return null;
     }
@@ -136,7 +136,7 @@ class _MessagePageState extends State<MessagePage> {
   void _registerCustomMessage() async {
     final args = await showParamsDialog(
       context,
-      title: '注册自定义消息',
+      title: 'Register Custom Message',
       params: [
         (
           label: 'MessageIdentifier',
@@ -169,7 +169,7 @@ class _MessagePageState extends State<MessagePage> {
   void _registerCustomMediaMessage() async {
     final args = await showParamsDialog(
       context,
-      title: '注册媒体自定义消息',
+      title: 'Register Custom Media Message',
       params: [
         (
           label: 'MessageIdentifier',
@@ -204,7 +204,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送自定义消息',
+      title: 'Send Custom Message',
       params: [
         (
           label: 'MessageIdentifier',
@@ -218,7 +218,7 @@ class _MessagePageState extends State<MessagePage> {
         ),
         (
           label: 'SearchableWords',
-          hint: 'hello,world 或 ["hello","world"]',
+          hint: 'hello,world or ["hello","world"]',
           isNumber: false,
         ),
         _needReceiptParam,
@@ -285,7 +285,7 @@ class _MessagePageState extends State<MessagePage> {
     if (path == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送媒体自定义消息',
+      title: 'Send Custom Media Message',
       params: [
         (
           label: 'MessageIdentifier',
@@ -299,7 +299,7 @@ class _MessagePageState extends State<MessagePage> {
         ),
         (
           label: 'SearchableWords',
-          hint: 'hello,world 或 ["hello","world"]',
+          hint: 'hello,world or ["hello","world"]',
           isNumber: false,
         ),
         _needReceiptParam,
@@ -404,7 +404,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送文本消息',
+      title: 'Send Text Message',
       params: [
         (label: 'Text', hint: 'hello', isNumber: false),
         (label: _mentionTypeLabel, hint: '0', isNumber: true),
@@ -457,7 +457,7 @@ class _MessagePageState extends State<MessagePage> {
     if (path == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送图片',
+      title: 'Send Image Message',
       params: [_needReceiptParam],
     );
     if (args == null || !mounted) return;
@@ -498,7 +498,7 @@ class _MessagePageState extends State<MessagePage> {
     if (recorded == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送高清语音',
+      title: 'Send HD Voice Message',
       params: [_needReceiptParam],
     );
     if (args == null || !mounted) return;
@@ -539,7 +539,7 @@ class _MessagePageState extends State<MessagePage> {
     if (path == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送文件',
+      title: 'Send File Message',
       params: [_needReceiptParam],
     );
     if (args == null || !mounted) return;
@@ -588,7 +588,7 @@ class _MessagePageState extends State<MessagePage> {
     if (!mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送小视频',
+      title: 'Send Short Video Message',
       params: [_needReceiptParam],
     );
     if (args == null || !mounted) return;
@@ -629,7 +629,7 @@ class _MessagePageState extends State<MessagePage> {
     if (path == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送GIF',
+      title: 'Send GIF Message',
       params: [_needReceiptParam],
     );
     if (args == null || !mounted) return;
@@ -666,11 +666,11 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送位置消息',
+      title: 'Send Location Message',
       params: [
         (label: 'Latitude', hint: '39.9', isNumber: false),
         (label: 'Longitude', hint: '116.3', isNumber: false),
-        (label: 'POI', hint: '北京', isNumber: false),
+        (label: 'POI', hint: 'Beijing', isNumber: false),
         _needReceiptParam,
       ],
     );
@@ -714,7 +714,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送引用消息',
+      title: 'Send Reference Message',
       params: [
         (label: 'ReferenceMessageId', hint: 'messageId', isNumber: false),
         (label: 'Text', hint: 'reply text', isNumber: false),
@@ -768,7 +768,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '删除消息(本地+远端)',
+      title: 'Delete Message (Local + Remote)',
       params: [
         (label: 'MessageId', hint: 'messageId', isNumber: false),
       ],
@@ -804,7 +804,7 @@ class _MessagePageState extends State<MessagePage> {
   void _deleteMessageForAll() async {
     final args = await showParamsDialog(
       context,
-      title: '撤回消息(所有人)',
+      title: 'Delete Message for All',
       params: [(label: 'MessageId', hint: 'messageId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -831,7 +831,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '按时间删除消息(仅自己)',
+      title: 'Delete Messages by Timestamp (Me)',
       params: [
         (label: 'Timestamp', hint: '0 (0=all)', isNumber: true),
         (label: 'Policy(0=local,1=remote)', hint: '0', isNumber: true),
@@ -863,7 +863,7 @@ class _MessagePageState extends State<MessagePage> {
   void _getMessageById() async {
     final args = await showParamsDialog(
       context,
-      title: '通过ID获取消息',
+      title: 'Get Message by ID',
       params: [
         (
           label: 'MessageId',
@@ -905,7 +905,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '消息分页查询',
+      title: 'Local Messages Query',
       params: [
         (label: 'Count', hint: '20', isNumber: true),
         (label: 'IsAscending(0=false,1=true)', hint: '0', isNumber: true),
@@ -950,7 +950,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '远端消息分页查询',
+      title: 'Remote Messages Query',
       params: [
         (label: 'Count', hint: '20', isNumber: true),
         (label: 'IsAscending(0=false,1=true)', hint: '0', isNumber: true),
@@ -996,7 +996,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '搜索消息',
+      title: 'Search Messages',
       params: [
         (label: 'Keyword', hint: 'keyword', isNumber: false),
         (label: 'Count', hint: '20', isNumber: true),
@@ -1038,7 +1038,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '插入消息(本地)',
+      title: 'Insert Messages (Local)',
       params: [
         (label: 'Text', hint: 'insert text', isNumber: false),
       ],
@@ -1076,7 +1076,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '发送已读回执',
+      title: 'Send Read Receipt',
       params: [
         (
           label: 'MessageIds(comma separated)',
@@ -1110,7 +1110,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '获取消息已读回执信息',
+      title: 'Get Read Receipt Info',
       params: [
         (
           label: 'MessageIds(comma separated)',
@@ -1150,7 +1150,7 @@ class _MessagePageState extends State<MessagePage> {
     if (picked == null || !mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '获取某时间前后消息',
+      title: 'Get Messages Around Time',
       params: [
         (label: 'SentTime(ms)', hint: '1700000000000', isNumber: true),
         (label: 'BeforeCount', hint: '10', isNumber: true),
@@ -1193,7 +1193,7 @@ class _MessagePageState extends State<MessagePage> {
   void _requestStreamMessageContent() async {
     final args = await showParamsDialog(
       context,
-      title: '请求流式消息内容',
+      title: 'Request Stream Message Content',
       params: [
         (label: 'MessageId', hint: 'messageId', isNumber: false),
       ],
@@ -1227,7 +1227,7 @@ class _MessagePageState extends State<MessagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('消息相关'),
+        title: const Text('Message'),
         actions: [
           if (_lastSentMessage != null)
             Padding(
@@ -1244,63 +1244,63 @@ class _MessagePageState extends State<MessagePage> {
       body: ListView(
         children: [
           ApiSection(
-            title: '发送消息',
+            title: 'Send Messages',
             children: [
-              ApiButton(label: '发送文本', onPressed: _sendTextMessage),
-              ApiButton(label: '发送图片', onPressed: _sendImageMessage),
-              ApiButton(label: '发送高清语音', onPressed: _sendHDVoiceMessage),
-              ApiButton(label: '发送文件', onPressed: _sendFileMessage),
-              ApiButton(label: '发送小视频', onPressed: _sendShortVideoMessage),
-              ApiButton(label: '发送GIF', onPressed: _sendGifMessage),
-              ApiButton(label: '发送位置', onPressed: _sendLocationMessage),
-              ApiButton(label: '发送引用消息', onPressed: _sendReferenceMessage),
+              ApiButton(label: 'Send Text Message', onPressed: _sendTextMessage),
+              ApiButton(label: 'Send Image Message', onPressed: _sendImageMessage),
+              ApiButton(label: 'Send HD Voice Message', onPressed: _sendHDVoiceMessage),
+              ApiButton(label: 'Send File Message', onPressed: _sendFileMessage),
+              ApiButton(label: 'Send Short Video Message', onPressed: _sendShortVideoMessage),
+              ApiButton(label: 'Send GIF Message', onPressed: _sendGifMessage),
+              ApiButton(label: 'Send Location Message', onPressed: _sendLocationMessage),
+              ApiButton(label: 'Send Reference Message', onPressed: _sendReferenceMessage),
             ],
           ),
           ApiSection(
-            title: '自定义消息',
+            title: 'Custom Messages',
             children: [
-              ApiButton(label: '注册自定义消息', onPressed: _registerCustomMessage),
+              ApiButton(label: 'Register Custom Message', onPressed: _registerCustomMessage),
               ApiButton(
-                  label: '注册媒体自定义消息', onPressed: _registerCustomMediaMessage),
-              ApiButton(label: '发送自定义消息', onPressed: _sendCustomMessage),
-              ApiButton(label: '发送媒体自定义消息', onPressed: _sendCustomMediaMessage),
+                  label: 'Register Custom Media Message', onPressed: _registerCustomMediaMessage),
+              ApiButton(label: 'Send Custom Message', onPressed: _sendCustomMessage),
+              ApiButton(label: 'Send Custom Media Message', onPressed: _sendCustomMediaMessage),
             ],
           ),
           ApiSection(
-            title: '消息操作',
+            title: 'Message Actions',
             children: [
-              ApiButton(label: '删除消息', onPressed: _deleteMessage),
-              ApiButton(label: '撤回消息(所有人)', onPressed: _deleteMessageForAll),
+              ApiButton(label: 'Delete Message', onPressed: _deleteMessage),
+              ApiButton(label: 'Delete Message for All', onPressed: _deleteMessageForAll),
               ApiButton(
-                label: '按时间删消息(仅自己)',
+                label: 'Delete Messages by Timestamp (Me)',
                 onPressed: _deleteMessagesForMeByTimestamp,
               ),
-              ApiButton(label: '插入消息(本地)', onPressed: _insertMessages),
-              ApiButton(label: '通过ID获取消息', onPressed: _getMessageById),
+              ApiButton(label: 'Insert Messages (Local)', onPressed: _insertMessages),
+              ApiButton(label: 'Get Message by ID', onPressed: _getMessageById),
             ],
           ),
           ApiSection(
-            title: '消息查询',
+            title: 'Message Query',
             children: [
-              ApiButton(label: '本地消息分页', onPressed: _messagesQuery),
-              ApiButton(label: '远端消息分页', onPressed: _remoteMessagesQuery),
-              ApiButton(label: '搜索消息', onPressed: _searchMessages),
-              ApiButton(label: '获取时间区间消息', onPressed: _getMessagesAroundTime),
+              ApiButton(label: 'Local Messages Query', onPressed: _messagesQuery),
+              ApiButton(label: 'Remote Messages Query', onPressed: _remoteMessagesQuery),
+              ApiButton(label: 'Search Messages', onPressed: _searchMessages),
+              ApiButton(label: 'Get Messages Around Time', onPressed: _getMessagesAroundTime),
             ],
           ),
           ApiSection(
-            title: '已读回执',
+            title: 'Read Receipt',
             children: [
-              ApiButton(label: '发送已读回执', onPressed: _sendReadReceiptResponse),
+              ApiButton(label: 'Send Read Receipt', onPressed: _sendReadReceiptResponse),
               ApiButton(
-                  label: '获取已读回执信息', onPressed: _getMessageReadReceiptInfo),
+                  label: 'Get Read Receipt Info', onPressed: _getMessageReadReceiptInfo),
             ],
           ),
           ApiSection(
-            title: '流式消息',
+            title: 'Stream Message',
             children: [
               ApiButton(
-                  label: '请求流式消息内容', onPressed: _requestStreamMessageContent),
+                  label: 'Request Stream Message Content', onPressed: _requestStreamMessageContent),
             ],
           ),
         ],

@@ -19,7 +19,7 @@ class _UserPageState extends State<UserPage> {
     if (text.isEmpty) return null;
     final idx = int.tryParse(text);
     if (idx == null || idx < 0 || idx >= UserGender.values.length) {
-      showResult('$action [onError]', {'error': 'Gender 仅支持 0/1/2'});
+      showResult('$action [onError]', {'error': 'Gender only supports 0/1/2'});
       return null;
     }
     return UserGender.values[idx];
@@ -56,7 +56,7 @@ class _UserPageState extends State<UserPage> {
     final idx = int.tryParse(text);
     if (idx == null || idx < 0 || idx >= SubscribeType.values.length) {
       showResult('$action [onError]', {
-        'error': 'SubscribeType 仅支持 0-${SubscribeType.values.length - 1}',
+        'error': 'SubscribeType only supports 0-${SubscribeType.values.length - 1}',
       });
       return null;
     }
@@ -71,13 +71,13 @@ class _UserPageState extends State<UserPage> {
   ) {
     final text = (rawValue ?? '').trim();
     if (text.isEmpty) {
-      showResult('$action [onError]', {'error': '$fieldName 不能为空'});
+      showResult('$action [onError]', {'error': '$fieldName cannot be empty'});
       return null;
     }
     final indexes = text.split(',').map((s) => int.tryParse(s.trim())).toList();
     if (indexes.any((index) => index == null)) {
       showResult('$action [onError]', {
-        'error': '$fieldName 仅支持逗号分隔的数字索引',
+        'error': '$fieldName only supports comma-separated numeric indexes',
       });
       return null;
     }
@@ -85,7 +85,7 @@ class _UserPageState extends State<UserPage> {
     for (final index in indexes.cast<int>()) {
       if (index < 0 || index >= values.length) {
         showResult('$action [onError]', {
-          'error': '$fieldName 索引超出范围: $index',
+          'error': '$fieldName index out of range: $index',
         });
         return null;
       }
@@ -105,7 +105,7 @@ class _UserPageState extends State<UserPage> {
   void _subscribeEvent() async {
     final args = await showParamsDialog(
       context,
-      title: '订阅用户状态',
+      title: 'Subscribe User Status',
       params: [
         (
           label: 'SubscribeType(0-${SubscribeType.values.length - 1})',
@@ -149,7 +149,7 @@ class _UserPageState extends State<UserPage> {
   void _unsubscribeEvent() async {
     final args = await showParamsDialog(
       context,
-      title: '取消订阅用户状态',
+      title: 'Unsubscribe User Status',
       params: [
         (
           label: 'SubscribeType(0-${SubscribeType.values.length - 1})',
@@ -189,7 +189,7 @@ class _UserPageState extends State<UserPage> {
   void _getSubscribeEvent() async {
     final args = await showParamsDialog(
       context,
-      title: '获取订阅状态',
+      title: 'Get Subscription Status',
       params: [
         (
           label: 'SubscribeType(0-${SubscribeType.values.length - 1})',
@@ -233,7 +233,7 @@ class _UserPageState extends State<UserPage> {
   void _createSubscribeQuery() async {
     final args = await showParamsDialog(
       context,
-      title: '创建订阅状态查询',
+      title: 'Create Subscription Query',
       params: [
         (
           label: 'SubscribeType(0-${SubscribeType.values.length - 1})',
@@ -266,7 +266,7 @@ class _UserPageState extends State<UserPage> {
   void _createFriendApplicationsQuery() async {
     final args = await showParamsDialog(
       context,
-      title: '创建好友申请查询',
+      title: 'Create Friend Applications Query',
       params: [
         (
           label: 'ApplicationTypes(0=sent,1=received; comma separated)',
@@ -318,7 +318,7 @@ class _UserPageState extends State<UserPage> {
     final query = _friendApplicationsQuery;
     if (query == null) {
       showResult('loadFriendApplicationsQueryNextPage [onError]', {
-        'error': '请先创建好友申请查询',
+        'error': 'Create Friend Applications Query first',
       });
       return;
     }
@@ -342,7 +342,7 @@ class _UserPageState extends State<UserPage> {
     final query = _subscribeQuery;
     if (query == null) {
       showResult('loadSubscribeQueryNextPage [onError]', {
-        'error': '请先创建订阅状态查询',
+        'error': 'Create Subscription Query first',
       });
       return;
     }
@@ -365,7 +365,7 @@ class _UserPageState extends State<UserPage> {
     if (!mounted) return;
     final args = await showParamsDialog(
       context,
-      title: '更新我的用户信息',
+      title: 'Update My User Profile',
       params: [
         (label: 'Name', hint: 'nickname', isNumber: false),
         (label: 'Gender(0=unknown,1=male,2=female)', hint: '0', isNumber: true),
@@ -431,7 +431,7 @@ class _UserPageState extends State<UserPage> {
   void _getUserProfiles() async {
     final args = await showParamsDialog(
       context,
-      title: '获取用户信息',
+      title: 'Get User Profiles',
       params: [(label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -456,7 +456,7 @@ class _UserPageState extends State<UserPage> {
   void _addToBlocklist() async {
     final args = await showParamsDialog(
       context,
-      title: '加入黑名单',
+      title: 'Add to Blocklist',
       params: [(label: 'UserId', hint: 'userId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -472,7 +472,7 @@ class _UserPageState extends State<UserPage> {
   void _removeFromBlocklist() async {
     final args = await showParamsDialog(
       context,
-      title: '从黑名单移除',
+      title: 'Remove from Blocklist',
       params: [(label: 'UserId', hint: 'userId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -496,7 +496,7 @@ class _UserPageState extends State<UserPage> {
   void _checkBlocked() async {
     final args = await showParamsDialog(
       context,
-      title: '检查是否在黑名单',
+      title: 'Check Blocklist Status',
       params: [(label: 'UserId', hint: 'userId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -510,7 +510,7 @@ class _UserPageState extends State<UserPage> {
   void _addFriend() async {
     final args = await showParamsDialog(
       context,
-      title: '添加好友',
+      title: 'Add Friend',
       params: [
         (label: 'UserId', hint: 'userId', isNumber: false),
         (label: 'Extra', hint: '(optional)', isNumber: false),
@@ -539,7 +539,7 @@ class _UserPageState extends State<UserPage> {
   void _removeFriends() async {
     final args = await showParamsDialog(
       context,
-      title: '删除好友',
+      title: 'Remove Friend',
       params: [
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
       ],
@@ -563,7 +563,7 @@ class _UserPageState extends State<UserPage> {
   void _acceptFriendApplication() async {
     final args = await showParamsDialog(
       context,
-      title: '接受好友申请',
+      title: 'Accept Friend Application',
       params: [(label: 'UserId', hint: 'userId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -579,7 +579,7 @@ class _UserPageState extends State<UserPage> {
   void _refuseFriendApplication() async {
     final args = await showParamsDialog(
       context,
-      title: '拒绝好友申请',
+      title: 'Refuse Friend Application',
       params: [(label: 'UserId', hint: 'userId', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -595,7 +595,7 @@ class _UserPageState extends State<UserPage> {
   void _getFriendsInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '获取好友信息',
+      title: 'Get Friends Info',
       params: [(label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -620,7 +620,7 @@ class _UserPageState extends State<UserPage> {
   void _setFriendInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '设置好友信息',
+      title: 'Set Friend Info',
       params: [
         (label: 'UserId', hint: 'userId', isNumber: false),
         (label: 'ExtFields', hint: '{"k":"v"}', isNumber: false),
@@ -656,7 +656,7 @@ class _UserPageState extends State<UserPage> {
   void _searchFriendsInfo() async {
     final args = await showParamsDialog(
       context,
-      title: '搜索好友',
+      title: 'Search Friends',
       params: [(label: 'Keyword', hint: 'name keyword', isNumber: false)],
     );
     if (args == null || !mounted) return;
@@ -677,7 +677,7 @@ class _UserPageState extends State<UserPage> {
   void _checkFriends() async {
     final args = await showParamsDialog(
       context,
-      title: '检查好友关系',
+      title: 'Check Friend Relation',
       params: [
         (label: 'UserIds(comma)', hint: 'uid1,uid2', isNumber: false),
       ],
@@ -730,10 +730,10 @@ class _UserPageState extends State<UserPage> {
   void _setFriendAddPermission() async {
     final args = await showParamsDialog(
       context,
-      title: '设置好友添加权限',
+      title: 'Set Friend Add Permission',
       params: [
         (
-          label: 'AllowType(1=free,2=needVerify,3=noOneAllowed; 0=notSet不可设置)',
+          label: 'AllowType(1=free,2=needVerify,3=noOneAllowed; 0=notSet cannot be set)',
           hint: '1',
           isNumber: true
         )
@@ -741,12 +741,12 @@ class _UserPageState extends State<UserPage> {
     );
     if (args == null || !mounted) return;
     final idx = int.tryParse(args[
-                'AllowType(1=free,2=needVerify,3=noOneAllowed; 0=notSet不可设置)'] ??
+                'AllowType(1=free,2=needVerify,3=noOneAllowed; 0=notSet cannot be set)'] ??
             '1') ??
         1;
     if (idx <= 0 || idx >= FriendAddPermission.values.length) {
       showResult('setFriendAddPermission', {
-        'error': 'AllowType 必须为 1/2/3（0=notSet 不可设置）',
+        'error': 'AllowType must be 1/2/3 (0=notSet cannot be set)',
         'input': idx,
       });
       return;
@@ -776,14 +776,14 @@ class _UserPageState extends State<UserPage> {
   void _setMyUserProfileVisibility() async {
     final args = await showParamsDialog(
       context,
-      title: '设置用户信息可见性',
+      title: 'Set User Profile Visibility',
       params: [(label: 'Visibility(0-N)', hint: '0', isNumber: true)],
     );
     if (args == null || !mounted) return;
     final idx = int.tryParse(args['Visibility(0-N)'] ?? '0') ?? 0;
     if (idx < 0 || idx >= UserProfileVisibility.values.length) {
       showResult('setMyUserProfileVisibility', {
-        'error': 'Visibility 必须为 0-${UserProfileVisibility.values.length - 1}',
+        'error': 'Visibility must be 0-${UserProfileVisibility.values.length - 1}',
         'input': idx,
       });
       return;
@@ -803,63 +803,63 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('用户/好友相关')),
+      appBar: AppBar(title: const Text('User/Friend')),
       body: ListView(
         children: [
           ApiSection(
-            title: '用户信息',
+            title: 'User Profile',
             children: [
-              ApiButton(label: '更新我的用户信息', onPressed: _updateMyUserProfile),
-              ApiButton(label: '获取我的用户信息', onPressed: _getMyUserProfile),
-              ApiButton(label: '获取用户信息', onPressed: _getUserProfiles),
+              ApiButton(label: 'Update My User Profile', onPressed: _updateMyUserProfile),
+              ApiButton(label: 'Get My User Profile', onPressed: _getMyUserProfile),
+              ApiButton(label: 'Get User Profiles', onPressed: _getUserProfiles),
               ApiButton(
-                  label: '获取用户信息可见性', onPressed: _getMyUserProfileVisibility),
+                  label: 'Get User Profile Visibility', onPressed: _getMyUserProfileVisibility),
               ApiButton(
-                  label: '设置用户信息可见性', onPressed: _setMyUserProfileVisibility),
+                  label: 'Set User Profile Visibility', onPressed: _setMyUserProfileVisibility),
             ],
           ),
           ApiSection(
-            title: '黑名单(Blocklist)',
+            title: 'Blocklist',
             children: [
-              ApiButton(label: '加入黑名单', onPressed: _addToBlocklist),
-              ApiButton(label: '从黑名单移除', onPressed: _removeFromBlocklist),
-              ApiButton(label: '获取黑名单', onPressed: _getBlocklist),
-              ApiButton(label: '检查黑名单状态', onPressed: _checkBlocked),
+              ApiButton(label: 'Add to Blocklist', onPressed: _addToBlocklist),
+              ApiButton(label: 'Remove from Blocklist', onPressed: _removeFromBlocklist),
+              ApiButton(label: 'Get Blocklist', onPressed: _getBlocklist),
+              ApiButton(label: 'Check Blocklist Status', onPressed: _checkBlocked),
             ],
           ),
           ApiSection(
-            title: '好友管理',
+            title: 'Friend Management',
             children: [
-              ApiButton(label: '添加好友', onPressed: _addFriend),
-              ApiButton(label: '删除好友', onPressed: _removeFriends),
-              ApiButton(label: '接受好友申请', onPressed: _acceptFriendApplication),
-              ApiButton(label: '拒绝好友申请', onPressed: _refuseFriendApplication),
-              ApiButton(label: '获取好友信息', onPressed: _getFriendsInfo),
-              ApiButton(label: '设置好友信息', onPressed: _setFriendInfo),
-              ApiButton(label: '搜索好友', onPressed: _searchFriendsInfo),
-              ApiButton(label: '检查好友关系', onPressed: _checkFriends),
+              ApiButton(label: 'Add Friend', onPressed: _addFriend),
+              ApiButton(label: 'Remove Friend', onPressed: _removeFriends),
+              ApiButton(label: 'Accept Friend Application', onPressed: _acceptFriendApplication),
+              ApiButton(label: 'Refuse Friend Application', onPressed: _refuseFriendApplication),
+              ApiButton(label: 'Get Friends Info', onPressed: _getFriendsInfo),
+              ApiButton(label: 'Set Friend Info', onPressed: _setFriendInfo),
+              ApiButton(label: 'Search Friends', onPressed: _searchFriendsInfo),
+              ApiButton(label: 'Check Friend Relation', onPressed: _checkFriends),
               ApiButton(
-                label: '创建好友申请查询',
+                label: 'Create Friend Applications Query',
                 onPressed: _createFriendApplicationsQuery,
               ),
               ApiButton(
-                label: '加载好友申请下一页',
+                label: 'Load Next Friend Applications Page',
                 onPressed: _loadFriendApplicationsQueryNextPage,
               ),
-              ApiButton(label: '好友列表分页', onPressed: _friendsQuery),
-              ApiButton(label: '获取好友添加权限', onPressed: _getFriendAddPermission),
-              ApiButton(label: '设置好友添加权限', onPressed: _setFriendAddPermission),
+              ApiButton(label: 'Friends Query', onPressed: _friendsQuery),
+              ApiButton(label: 'Get Friend Add Permission', onPressed: _getFriendAddPermission),
+              ApiButton(label: 'Set Friend Add Permission', onPressed: _setFriendAddPermission),
             ],
           ),
           ApiSection(
-            title: '订阅状态',
+            title: 'Subscription',
             children: [
-              ApiButton(label: '订阅用户状态', onPressed: _subscribeEvent),
-              ApiButton(label: '取消订阅用户状态', onPressed: _unsubscribeEvent),
-              ApiButton(label: '获取订阅状态', onPressed: _getSubscribeEvent),
-              ApiButton(label: '创建订阅状态查询', onPressed: _createSubscribeQuery),
+              ApiButton(label: 'Subscribe User Status', onPressed: _subscribeEvent),
+              ApiButton(label: 'Unsubscribe User Status', onPressed: _unsubscribeEvent),
+              ApiButton(label: 'Get Subscription Status', onPressed: _getSubscribeEvent),
+              ApiButton(label: 'Create Subscription Query', onPressed: _createSubscribeQuery),
               ApiButton(
-                  label: '加载订阅状态下一页', onPressed: _loadSubscribeQueryNextPage),
+                  label: 'Load Next Subscription Page', onPressed: _loadSubscribeQueryNextPage),
             ],
           ),
         ],

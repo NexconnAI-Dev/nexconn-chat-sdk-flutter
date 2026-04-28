@@ -35,7 +35,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
       case '2':
         final userId = (args[_mentionUserIdLabel] ?? '').trim();
         if (userId.isEmpty) {
-          showResult('$action [onError]', {'error': 'MentionUserId 不能为空'});
+          showResult('$action [onError]', {'error': 'MentionUserId cannot be empty'});
           return (value: null, isValid: false);
         }
         return (
@@ -46,7 +46,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
           isValid: true,
         );
       default:
-        showResult('$action [onError]', {'error': 'MentionType 仅支持 0/1/2'});
+        showResult('$action [onError]', {'error': 'MentionType only supports 0/1/2'});
         return (value: null, isValid: false);
     }
   }
@@ -54,7 +54,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   Future<String?> _pickChannelId() async {
     final args = await showParamsDialog(
       context,
-      title: '输入聊天室ID',
+      title: 'Enter Open Channel ID',
       params: [(label: 'ChannelId', hint: 'chatRoomId', isNumber: false)],
     );
     return args?['ChannelId'];
@@ -63,7 +63,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _enterChannel() async {
     final args = await showParamsDialog(
       context,
-      title: '加入聊天室',
+      title: 'Enter Open Channel',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'MessageCount', hint: '20', isNumber: true),
@@ -96,7 +96,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _setMetadata() async {
     final args = await showParamsDialog(
       context,
-      title: '设置聊天室KV',
+      title: 'Set Open Channel Metadata',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'Key', hint: 'key', isNumber: false),
@@ -126,7 +126,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _getMetadata() async {
     final args = await showParamsDialog(
       context,
-      title: '获取聊天室KV',
+      title: 'Get Open Channel Metadata',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'Key', hint: '(optional, empty=all)', isNumber: false),
@@ -157,7 +157,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _deleteMetadata() async {
     final args = await showParamsDialog(
       context,
-      title: '删除聊天室KV',
+      title: 'Delete Open Channel Metadata',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'Keys(comma)', hint: 'key1,key2', isNumber: false),
@@ -188,7 +188,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _sendTextMessage() async {
     final args = await showParamsDialog(
       context,
-      title: '发送聊天室文本消息',
+      title: 'Send Open Channel Text Message',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'Text', hint: 'hello chatroom', isNumber: false),
@@ -228,7 +228,7 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   void _openChannelMessagesQuery() async {
     final args = await showParamsDialog(
       context,
-      title: '聊天室历史消息查询',
+      title: 'Open Channel Messages Query',
       params: [
         (label: 'ChannelId', hint: 'chatRoomId', isNumber: false),
         (label: 'Count', hint: '20', isNumber: true),
@@ -269,29 +269,29 @@ class _OpenChannelPageState extends State<OpenChannelPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('聊天室相关')),
+      appBar: AppBar(title: const Text('Open Channel')),
       body: ListView(
         children: [
           ApiSection(
-            title: '聊天室操作',
+            title: 'Open Channel Actions',
             children: [
-              ApiButton(label: '加入聊天室', onPressed: _enterChannel),
-              ApiButton(label: '离开聊天室', onPressed: _exitChannel),
+              ApiButton(label: 'Enter Open Channel', onPressed: _enterChannel),
+              ApiButton(label: 'Exit Open Channel', onPressed: _exitChannel),
             ],
           ),
           ApiSection(
-            title: 'KV 属性(Metadata)',
+            title: 'KV Metadata',
             children: [
-              ApiButton(label: '设置KV', onPressed: _setMetadata),
-              ApiButton(label: '获取KV', onPressed: _getMetadata),
-              ApiButton(label: '删除KV', onPressed: _deleteMetadata),
+              ApiButton(label: 'Set Metadata', onPressed: _setMetadata),
+              ApiButton(label: 'Get Metadata', onPressed: _getMetadata),
+              ApiButton(label: 'Delete Metadata', onPressed: _deleteMetadata),
             ],
           ),
           ApiSection(
-            title: '消息',
+            title: 'Messages',
             children: [
-              ApiButton(label: '发送文本消息', onPressed: _sendTextMessage),
-              ApiButton(label: '历史消息查询', onPressed: _openChannelMessagesQuery),
+              ApiButton(label: 'Send Text Message', onPressed: _sendTextMessage),
+              ApiButton(label: 'Open Channel Messages Query', onPressed: _openChannelMessagesQuery),
             ],
           ),
         ],

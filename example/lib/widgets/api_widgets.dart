@@ -65,7 +65,7 @@ Future<ChannelType?> pickChannelType(BuildContext context) async {
   return showDialog<ChannelType>(
     context: context,
     builder: (ctx) => SimpleDialog(
-      title: const Text('选择 ChannelType'),
+      title: const Text('Select ChannelType'),
       children: ChannelType.values
           .map((t) => SimpleDialogOption(
                 onPressed: () => Navigator.pop(ctx, t),
@@ -85,7 +85,7 @@ Future<List<ChannelType>?> pickChannelTypes(
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setLocal) => AlertDialog(
-        title: const Text('选择 ChannelType (多选)'),
+        title: const Text('Select ChannelType (Multi-select)'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ChannelType.values
@@ -131,7 +131,7 @@ Future<PickedChannel?> pickChannel(
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setLocal) => AlertDialog(
-        title: const Text('选择 Channel'),
+        title: const Text('Select Channel'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -418,7 +418,7 @@ class _VoiceRecordDialogState extends State<_VoiceRecordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('录制语音'),
+      title: const Text('Record Voice'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -445,7 +445,7 @@ class _VoiceRecordDialogState extends State<_VoiceRecordDialog> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(_recording ? '点击停止' : '点击录音',
+          Text(_recording ? 'Tap to Stop' : 'Tap to Record',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
         ],
       ),
@@ -458,7 +458,7 @@ class _VoiceRecordDialogState extends State<_VoiceRecordDialog> {
             }
             if (mounted) Navigator.pop(context);
           },
-          child: const Text('取消'),
+          child: const Text('Cancel'),
         ),
       ],
     );
@@ -480,7 +480,7 @@ void showResult(String title, dynamic result) {
           maxLines: 2, overflow: TextOverflow.ellipsis),
       duration: const Duration(seconds: 2),
       action: SnackBarAction(
-        label: '详情',
+        label: 'Details',
         onPressed: () {
           globalNavigatorKey.currentState?.push(
             MaterialPageRoute(builder: (_) => const ResultListPage()),
