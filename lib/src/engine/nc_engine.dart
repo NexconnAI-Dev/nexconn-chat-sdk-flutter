@@ -387,7 +387,7 @@ class NCEngine {
     }
 
     if (Platform.isIOS) {
-      await engine.setModuleName('nexconnchatflutter', '26.2.0');
+      await engine.setModuleName('nexconnchatflutter', '26.2.1');
     }
 
     final code = await _engine!.connect(

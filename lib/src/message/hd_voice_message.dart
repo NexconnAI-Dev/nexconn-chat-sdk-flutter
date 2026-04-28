@@ -2,6 +2,7 @@ import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 import '../engine/nc_engine.dart';
 import '../internal/converter.dart';
 import '../internal/types.dart';
+import '../model/speech_to_text_info.dart';
 import 'media_message.dart';
 import 'message.dart';
 
@@ -42,11 +43,27 @@ class HDVoiceMessage extends MediaMessage {
   /// Sets the duration of the HD voice message in seconds.
   set duration(int? v) => _voiceRaw.duration = v;
 
+  /// Speech-to-text metadata attached by the SDK when conversion is available.
+  SpeechToTextInfo? get speechToTextInfo =>
+      _voiceRaw.speechToTextInfo != null
+          ? SpeechToTextInfo.fromRaw(_voiceRaw.speechToTextInfo!)
+          : null;
+
   /// Requests speech-to-text conversion for this HD voice message.
   ///
   /// [handler] is called with an [NCError].
   /// On success, `error.code` is `0`.
   Future<int> requestSpeechToText(ErrorHandler handler) {
+    if (messageId == null || messageId!.isEmpty) {
+      const code = 25101;
+      handler(
+        Converter.toNCError(
+          code,
+          errorMessage: 'messageId is required',
+        ),
+      );
+      return Future.value(code);
+    }
     return NCEngine.engine.requestSpeechToTextForMessage(
       messageId!,
       callback: IRCIMIWOperationCallback(
@@ -62,8 +79,19 @@ class HDVoiceMessage extends MediaMessage {
   /// [handler] is called with an [NCError].
   /// On success, `error.code` is `0`.
   Future<int> setSpeechToTextVisible(bool visible, ErrorHandler handler) {
+    final localMessageId = clientId;
+    if (localMessageId == null) {
+      const code = 25101;
+      handler(
+        Converter.toNCError(
+          code,
+          errorMessage: 'Speech-to-text visibility requires a local message id',
+        ),
+      );
+      return Future.value(code);
+    }
     return NCEngine.engine.setMessageSpeechToTextVisible(
-      clientId!,
+      localMessageId,
       visible,
       callback: IRCIMIWOperationCallback(
         onSuccess: () => handler(Converter.toNCError(0)),
