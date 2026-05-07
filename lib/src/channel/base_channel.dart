@@ -505,7 +505,7 @@ class BaseChannel {
       Converter.toRCConversationType(identifier.channelType),
       identifier.channelId,
       identifier.subChannelId,
-      0,
+      latestMessage?.sentTime ?? 0,
       callback: IRCIMIWClearUnreadCountCallback(
         onUnreadCountCleared: (code) => handler(Converter.toNCError(code)),
       ),

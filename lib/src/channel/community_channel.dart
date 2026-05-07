@@ -95,7 +95,7 @@ class CommunityChannel extends BaseChannel {
     return NCEngine.engine.syncUltraGroupReadStatus(
       channelId,
       null,
-      0,
+      latestMessage?.sentTime ?? 0,
       callback: IRCIMIWSyncUltraGroupReadStatusCallback(
         onUltraGroupReadStatusSynced:
             (code) => handler(Converter.toNCError(code)),

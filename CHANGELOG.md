@@ -1,3 +1,7 @@
+## 26.2.4
+
+- fix Android time issue
+
 ## 26.2.3
 
 - change Android default init parameters
