@@ -1,3 +1,7 @@
+## 26.2.3
+
+- change Android default init parameters
+
 ## 26.2.2
 
 - fix example issue

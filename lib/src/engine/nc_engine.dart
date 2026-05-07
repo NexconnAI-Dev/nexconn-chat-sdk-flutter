@@ -338,7 +338,7 @@ class NCEngine {
                 : null,
         pushOptions: params.pushOptions?.toRaw(),
         enablePush: params.enablePush,
-        enableIPC: false,
+        enableIPC: true,
       ),
     );
     _bindGlobalCallbacks();
@@ -387,7 +387,7 @@ class NCEngine {
     }
 
     if (Platform.isIOS) {
-      await engine.setModuleName('nexconnchatflutter', '26.2.2');
+      await engine.setModuleName('nexconnchatflutter', '26.2.3');
     }
 
     final code = await _engine!.connect(
