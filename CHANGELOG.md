@@ -1,3 +1,7 @@
+## 26.2.5
+
+- change im_wrapper_plugin to new version
+
 ## 26.2.4
 
 - fix Android time issue
