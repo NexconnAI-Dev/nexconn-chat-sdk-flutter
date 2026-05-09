@@ -387,7 +387,7 @@ class NCEngine {
     }
 
     if (Platform.isIOS) {
-      await engine.setModuleName('nexconnchatflutter', '26.2.5');
+      await engine.setModuleName('nexconnchatflutter', '26.2.6');
     }
 
     final code = await _engine!.connect(
@@ -579,6 +579,20 @@ class NCEngine {
           channelId,
           subChannelId,
           level,
+        );
+      }
+    };
+
+    e.onConversationReadStatusSyncMessageReceived = (
+      type,
+      channelId,
+      timestamp,
+    ) {
+      if (type != null) {
+        _notifyChannelUnreadStatusSync(
+          Converter.fromRCConversationType(type),
+          channelId,
+          timestamp,
         );
       }
     };

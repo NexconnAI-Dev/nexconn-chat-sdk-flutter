@@ -501,13 +501,29 @@ class BaseChannel {
   /// On success, `error.code` is `0`.
   Future<int> clearUnreadCount(ErrorHandler handler) {
     final identifier = channelIdentifier;
-    return _engine.clearUnreadCount(
+    final latestSentTime = latestMessage?.sentTime ?? 0;
+    return _engine.syncConversationReadStatus(
       Converter.toRCConversationType(identifier.channelType),
       identifier.channelId,
       identifier.subChannelId,
-      latestMessage?.sentTime ?? 0,
-      callback: IRCIMIWClearUnreadCountCallback(
-        onUnreadCountCleared: (code) => handler(Converter.toNCError(code)),
+      latestSentTime,
+      callback: IRCIMIWSyncConversationReadStatusCallback(
+        onConversationReadStatusSynced: (code) {
+          if (code != 0) {
+            handler(Converter.toNCError(code));
+            return;
+          }
+          _engine.clearUnreadCount(
+            Converter.toRCConversationType(identifier.channelType),
+            identifier.channelId,
+            identifier.subChannelId,
+            latestSentTime,
+            callback: IRCIMIWClearUnreadCountCallback(
+              onUnreadCountCleared:
+                  (clearCode) => handler(Converter.toNCError(clearCode)),
+            ),
+          );
+        },
       ),
     );
   }

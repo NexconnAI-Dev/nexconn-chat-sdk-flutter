@@ -257,6 +257,14 @@ class _ConnectPageState extends State<ConnectPage> {
             'level': event.level.name,
           });
         },
+        onChannelUnreadStatusSync: (event) {
+          showResult('onChannelUnreadStatusSync', {
+            'channelType': event.channelIdentifier.channelType.name,
+            'channelId': event.channelIdentifier.channelId,
+            'subChannelId': event.channelIdentifier.subChannelId,
+            'timestamp': event.timestamp,
+          });
+        },
         onRemoteChannelsSyncCompleted: (event) {
           showResult('onRemoteChannelsSyncCompleted', {
             'error': event.error?.toJson(),
@@ -433,23 +441,31 @@ class _ConnectPageState extends State<ConnectPage> {
                   children: [
                     ApiButton(label: 'Connect', onPressed: _connect),
                     ApiButton(label: 'Disconnect', onPressed: _disconnect),
-                    ApiButton(label: 'Get Connection Status', onPressed: _getConnectionStatus),
+                    ApiButton(
+                        label: 'Get Connection Status',
+                        onPressed: _getConnectionStatus),
                   ],
                 ),
                 ApiSection(
                   title: 'Event Listeners',
                   children: [
                     ApiButton(label: 'Set Listeners', onPressed: _setListeners),
-                    ApiButton(label: 'Remove Listeners', onPressed: _removeListeners),
+                    ApiButton(
+                        label: 'Remove Listeners', onPressed: _removeListeners),
                   ],
                 ),
                 ApiSection(
                   title: 'Push & No-Disturb',
                   children: [
-                    ApiButton(label: 'Set No-Disturb Time', onPressed: _setNoDisturbTime),
                     ApiButton(
-                        label: 'Remove No-Disturb Time', onPressed: _removeNoDisturbTime),
-                    ApiButton(label: 'Get No-Disturb Time', onPressed: _getNoDisturbTime),
+                        label: 'Set No-Disturb Time',
+                        onPressed: _setNoDisturbTime),
+                    ApiButton(
+                        label: 'Remove No-Disturb Time',
+                        onPressed: _removeNoDisturbTime),
+                    ApiButton(
+                        label: 'Get No-Disturb Time',
+                        onPressed: _getNoDisturbTime),
                   ],
                 ),
               ],

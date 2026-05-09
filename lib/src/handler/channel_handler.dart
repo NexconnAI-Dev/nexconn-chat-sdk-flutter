@@ -49,6 +49,21 @@ class ChannelNoDisturbLevelSyncEvent {
   });
 }
 
+/// Event fired when a channel's unread status is synced from another device.
+class ChannelUnreadStatusSyncEvent {
+  /// The channel whose unread status was synced.
+  final ChannelIdentifier channelIdentifier;
+
+  /// The send time of the latest read message.
+  final int timestamp;
+
+  /// Creates a [ChannelUnreadStatusSyncEvent].
+  const ChannelUnreadStatusSyncEvent({
+    required this.channelIdentifier,
+    required this.timestamp,
+  });
+}
+
 /// Event fired when user typing status changes in a channel.
 class TypingStatusChangedEvent {
   /// The channel where typing status changed.
@@ -90,6 +105,10 @@ typedef OnChannelPinnedSync = void Function(ChannelPinnedSyncEvent event);
 typedef OnChannelNoDisturbLevelSync =
     void Function(ChannelNoDisturbLevelSyncEvent event);
 
+/// Callback invoked when a channel's unread status is synced.
+typedef OnChannelUnreadStatusSync =
+    void Function(ChannelUnreadStatusSyncEvent event);
+
 /// Callback invoked when user typing status changes in a channel.
 typedef OnTypingStatusChanged = void Function(TypingStatusChangedEvent event);
 
@@ -113,6 +132,9 @@ class ChannelHandler {
   /// Called when a channel's do-not-disturb level is synced from the server.
   final OnChannelNoDisturbLevelSync? onChannelNoDisturbLevelSync;
 
+  /// Called when a channel's unread status is synced from another device.
+  final OnChannelUnreadStatusSync? onChannelUnreadStatusSync;
+
   /// Called when user typing status changes in a channel.
   final OnTypingStatusChanged? onTypingStatusChanged;
 
@@ -129,6 +151,7 @@ class ChannelHandler {
   ChannelHandler({
     this.onChannelPinnedSync,
     this.onChannelNoDisturbLevelSync,
+    this.onChannelUnreadStatusSync,
     this.onTypingStatusChanged,
     this.onRemoteChannelsSyncCompleted,
     this.onChannelTranslateStrategySync,

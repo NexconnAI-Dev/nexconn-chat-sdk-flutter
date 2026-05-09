@@ -1,6 +1,10 @@
+## 26.2.6
+
+- add onChannelUnreadStatusSync callback
+
 ## 26.2.5
 
-- change im_wrapper_plugin to new version
+- update im_wrapper_plugin to new version
 
 ## 26.2.4
 

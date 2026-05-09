@@ -45,6 +45,25 @@ void _notifyChannelNotificationLevelSync(
   );
 }
 
+void _notifyChannelUnreadStatusSync(
+  ChannelType type,
+  String? channelId,
+  int? timestamp,
+) {
+  final channel = ChannelIdentifier(
+    channelType: type,
+    channelId: channelId ?? '',
+  );
+  NCEngine._channelHandlers.notify(
+    (h) => h.onChannelUnreadStatusSync?.call(
+      ChannelUnreadStatusSyncEvent(
+        channelIdentifier: channel,
+        timestamp: timestamp ?? 0,
+      ),
+    ),
+  );
+}
+
 void _notifyTypingStatusChanged(
   ChannelType type,
   String? channelId,
