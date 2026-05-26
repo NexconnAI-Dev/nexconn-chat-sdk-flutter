@@ -7,6 +7,7 @@ library;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 
 import '../enum/channel_type.dart';
@@ -69,6 +70,10 @@ part 'nc_engine_open_channel.dart';
 part 'nc_engine_group.dart';
 part 'nc_engine_user.dart';
 part 'nc_engine_translate.dart';
+
+const MethodChannel _nativeChannel = MethodChannel(
+  'ai.nexconn.chat_plugin/native',
+);
 
 /// Parameters used to initialize the engine.
 class InitParams {
@@ -321,6 +326,16 @@ class NCEngine {
   /// This must be called before any other SDK API. It creates the engine
   /// instance and binds all global event callbacks.
   static Future<void> initialize(InitParams params) async {
+    if (Platform.isAndroid && params.enablePush == true) {
+      try {
+        await _nativeChannel.invokeMethod<void>('push:init', {
+          'enablePush': true,
+        });
+      } catch (e) {
+        debugPrint('[NCEngine] Android push init request failed: $e');
+      }
+    }
+
     _engine = await RCIMIWEngine.create(
       params.appKey,
       RCIMIWEngineOptions.create(
@@ -337,7 +352,6 @@ class NCEngine {
                 ? RCIMIWLogLevel.values[params.logLevel!.index]
                 : null,
         pushOptions: params.pushOptions?.toRaw(),
-        enablePush: params.enablePush,
         enableIPC: true,
       ),
     );
@@ -387,7 +401,7 @@ class NCEngine {
     }
 
     if (Platform.isIOS) {
-      await engine.setModuleName('nexconnchatflutter', '26.2.6');
+      await engine.setModuleName('nexconnchatflutter', '26.2.7');
     }
 
     final code = await _engine!.connect(

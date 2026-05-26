@@ -1,3 +1,8 @@
+## 26.2.7
+
+- Modify Android push notification initialization method
+- Improve merging and forwarding
+
 ## 26.2.6
 
 - add onChannelUnreadStatusSync callback

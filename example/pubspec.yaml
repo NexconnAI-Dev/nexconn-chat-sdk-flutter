@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
   ai_nexconn_chat_plugin:
     path: ../
-  rongcloud_im_wrapper_plugin: ^5.32.7
-  image_picker: ^1.1.2
+  rongcloud_im_wrapper_plugin: ^5.32.8
+  image_picker: 1.1.2
   file_picker: ^10.1.2
   record: ^6.0.0
   path_provider: ^2.1.5

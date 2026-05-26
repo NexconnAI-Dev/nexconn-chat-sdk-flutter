@@ -44,10 +44,9 @@ class HDVoiceMessage extends MediaMessage {
   set duration(int? v) => _voiceRaw.duration = v;
 
   /// Speech-to-text metadata attached by the SDK when conversion is available.
-  SpeechToTextInfo? get speechToTextInfo =>
-      _voiceRaw.speechToTextInfo != null
-          ? SpeechToTextInfo.fromRaw(_voiceRaw.speechToTextInfo!)
-          : null;
+  SpeechToTextInfo? get speechToTextInfo => _voiceRaw.speechToTextInfo != null
+      ? SpeechToTextInfo.fromRaw(_voiceRaw.speechToTextInfo!)
+      : null;
 
   /// Requests speech-to-text conversion for this HD voice message.
   ///
@@ -56,12 +55,7 @@ class HDVoiceMessage extends MediaMessage {
   Future<int> requestSpeechToText(ErrorHandler handler) {
     if (messageId == null || messageId!.isEmpty) {
       const code = 25101;
-      handler(
-        Converter.toNCError(
-          code,
-          errorMessage: 'messageId is required',
-        ),
-      );
+      handler(Converter.toNCError(code, errorMessage: 'messageId is required'));
       return Future.value(code);
     }
     return NCEngine.engine.requestSpeechToTextForMessage(

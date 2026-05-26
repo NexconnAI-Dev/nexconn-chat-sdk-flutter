@@ -437,8 +437,11 @@ class BaseChannel {
         Converter.toRCConversationType(mp.sourceChannelType),
         mp.summaryList,
         mp.nameList,
-        mp.msgList.map((e) => e.toRaw()).toList(),
+        mp.msgList?.map((e) => e.toRaw()).toList() ?? <RCIMIWCombineMsgInfo>[],
       );
+      if (raw is RCIMIWCombineV2Message && mp.jsonMsgKey != null) {
+        raw.jsonMsgKey = mp.jsonMsgKey;
+      }
     } else if (mp is CustomMediaMessageParams) {
       raw = await _engine.createNativeCustomMediaMessage(
         type,

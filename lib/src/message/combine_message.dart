@@ -18,17 +18,28 @@ class CombineMessageParams extends MessageParams {
   final List<String> nameList;
 
   /// The list of individual message info objects to be combined.
-  final List<CombineMessageInfo> msgList;
+  ///
+  /// Either [msgList] or [jsonMsgKey] must be provided.
+  final List<CombineMessageInfo>? msgList;
 
-  /// Creates [CombineMessageParams] with the required source type, summaries, names, and message list.
+  /// The key used to retrieve the full JSON content of the combined messages.
+  ///
+  /// Either [msgList] or [jsonMsgKey] must be provided.
+  final String? jsonMsgKey;
+
+  /// Creates [CombineMessageParams] with the required source type, summaries, names, and message content source.
   CombineMessageParams({
     required this.sourceChannelType,
     required this.summaryList,
     required this.nameList,
-    required this.msgList,
+    this.msgList,
+    this.jsonMsgKey,
     super.mentionedInfo,
     super.needReceipt,
-  });
+  }) : assert(
+         msgList != null || jsonMsgKey != null,
+         'Either msgList or jsonMsgKey must be provided.',
+       );
 }
 
 /// A combined (forwarded) message in the Nexconn IM SDK.
@@ -45,14 +56,13 @@ class CombineMessage extends MediaMessage {
   RCIMIWCombineV2Message get _combineRaw => raw as RCIMIWCombineV2Message;
 
   /// The channel type of the source channel where the messages originated.
-  int? get combineConversationType => _combineRaw.combineConversationType;
+  RCIMIWConversationType? get combineConversationType =>
+      _combineRaw.combineConversationType;
 
   /// The source channel type where the combined messages originated.
   ChannelType? get sourceChannelType =>
       combineConversationType != null
-          ? Converter.fromRCConversationType(
-            RCIMIWConversationType.values[combineConversationType!],
-          )
+          ? Converter.fromRCConversationType(combineConversationType!)
           : null;
 
   /// The list of summary text lines for the combined message preview.
