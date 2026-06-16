@@ -1,3 +1,8 @@
+## 26.2.8
+
+- Rename public combined-message type from `combineV2` to `combine`.
+- Rename tag channel pin status parameters from `TopStatus` to `PinStatus`.
+
 ## 26.2.7
 
 - Modify Android push notification initialization method

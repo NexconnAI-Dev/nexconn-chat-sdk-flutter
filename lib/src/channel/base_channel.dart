@@ -1240,9 +1240,7 @@ class BaseChannel {
     return NCEngine.engine.searchConversations(
       Converter.toRCConversationTypes(params.channelTypes),
       null,
-      params.messageTypes
-          .map((t) => RCIMIWMessageType.values[t.index])
-          .toList(),
+      params.messageTypes.map(Converter.toRCMessageType).toList(),
       params.keyword,
       callback: IRCIMIWSearchConversationsCallback(
         onSuccess:
@@ -1335,10 +1333,10 @@ class BaseChannel {
     return SearchMessagesByTimeRangeQuery(params);
   }
 
-  /// Recalls (deletes for all users) a sent message.
+  /// Deletes a sent message for all users.
   ///
-  /// [message] is the message to recall.
-  /// The [handler] receives the recalled message on success, or `null` on failure.
+  /// [message] is the message to delete.
+  /// The [handler] receives the deleted message on success, or `null` on failure.
   static Future<int> deleteMessageForAll(
     Message message,
     OperationHandler<Message> handler,

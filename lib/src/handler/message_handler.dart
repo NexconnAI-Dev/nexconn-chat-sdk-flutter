@@ -28,7 +28,7 @@ class MessageReceivedEvent {
   });
 }
 
-/// Event fired when messages are deleted (including recalled messages).
+/// Event fired when messages are deleted for all users.
 class MessageDeletedEvent {
   /// The deleted messages.
   final List<Message>? messages;
@@ -220,7 +220,7 @@ class MessageHandler {
   /// Called when a new message is received.
   final OnMessageReceived? onMessageReceived;
 
-  /// Called when messages are deleted or recalled.
+  /// Called when messages are deleted for all users.
   final OnMessageDeleted? onMessageDeleted;
 
   /// Called when message metadata is updated.

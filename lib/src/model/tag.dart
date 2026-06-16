@@ -13,8 +13,8 @@ class CreateTagParams {
   CreateTagParams({required this.tagId, required this.tagName});
 }
 
-/// Parameters for changing the pin/top status of a channel within a tag.
-class ChangeChannelTopStatusInTagParams {
+/// Parameters for changing the pin status of a channel within a tag.
+class ChangeChannelPinStatusInTagParams {
   /// The tag identifier.
   final String tagId;
 
@@ -27,8 +27,8 @@ class ChangeChannelTopStatusInTagParams {
   /// Whether to pin the channel to the top within the tag.
   final bool top;
 
-  /// Creates [ChangeChannelTopStatusInTagParams].
-  ChangeChannelTopStatusInTagParams({
+  /// Creates [ChangeChannelPinStatusInTagParams].
+  ChangeChannelPinStatusInTagParams({
     required this.tagId,
     required this.type,
     required this.channelId,

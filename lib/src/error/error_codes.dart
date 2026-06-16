@@ -97,11 +97,11 @@ const errorCodeReasons = <int, String>{
   24414: 'The Ultra Group channel ID does not exist',
   24415: 'Ultra Group channel message sending exceeds the limit',
   24416: 'The user is not in the private Ultra Group channel',
-  25101: 'Invalid parameters for recalling a message',
+  25101: 'Invalid parameters for deleting a message for all users',
   25102: 'Single/group chat cloud storage is not enabled',
   25104: 'Unknown exception',
   25107:
-      'Recalling other people\'s messages is not allowed (server-side switch is enabled)',
+      'Deleting other people\'s messages for all users is not allowed (server-side switch is enabled)',
   25402: 'Managed service exception',
   25403: 'Managed service parameter error',
   25404:
@@ -413,7 +413,7 @@ const errorCodeReasons = <int, String>{
   34238: 'Invalid proxy configuration',
   34239: 'Invalid proxy test service passed to testProxy',
   34240: 'The testProxy API is unreachable',
-  34241: 'recallUltraGroupMessage recalled an unsupported message type',
+  34241: 'deleteMessageForAll received an unsupported message type',
   34242: 'The provided conversations is null',
   34243: 'The provided message is empty',
   34244: 'SentStatus is null',

@@ -126,7 +126,7 @@ class Message {
   /// The type of this message (e.g., text, image, voice).
   MessageType? get messageType =>
       raw.messageType != null
-          ? MessageType.values[raw.messageType!.index]
+          ? Converter.fromRCMessageType(raw.messageType!)
           : null;
 
   /// The target channel ID this message is associated with.

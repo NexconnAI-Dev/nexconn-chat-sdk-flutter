@@ -1,6 +1,7 @@
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 import '../enum/channel_type.dart';
 import '../enum/connection_status.dart';
+import '../enum/message_type.dart';
 import '../enum/no_disturb_level.dart';
 import '../enum/translate_strategy.dart';
 import '../error/nc_error.dart';
@@ -115,6 +116,94 @@ class Converter {
     List<ChannelType> channelTypes,
   ) {
     return channelTypes.map(toRCConversationType).toList();
+  }
+
+  /// Converts [MessageType] to the SDK message type.
+  static RCIMIWMessageType toRCMessageType(MessageType type) {
+    switch (type) {
+      case MessageType.unknown:
+        return RCIMIWMessageType.unknown;
+      case MessageType.text:
+        return RCIMIWMessageType.text;
+      case MessageType.voice:
+        return RCIMIWMessageType.voice;
+      case MessageType.image:
+        return RCIMIWMessageType.image;
+      case MessageType.file:
+        return RCIMIWMessageType.file;
+      case MessageType.sight:
+        return RCIMIWMessageType.sight;
+      case MessageType.gif:
+        return RCIMIWMessageType.gif;
+      case MessageType.reference:
+        return RCIMIWMessageType.reference;
+      case MessageType.command:
+        return RCIMIWMessageType.command;
+      case MessageType.commandNotification:
+        return RCIMIWMessageType.commandNotification;
+      case MessageType.location:
+        return RCIMIWMessageType.location;
+      case MessageType.customMessage:
+        return RCIMIWMessageType.nativeCustom;
+      case MessageType.stream:
+        return RCIMIWMessageType.stream;
+      case MessageType.customMediaMessage:
+        return RCIMIWMessageType.nativeCustomMedia;
+      case MessageType.groupNotification:
+        return RCIMIWMessageType.groupNotification;
+      case MessageType.combine:
+        return RCIMIWMessageType.combineV2;
+    }
+  }
+
+  /// Converts the SDK message type to [MessageType].
+  ///
+  /// SDK-only user custom messages are intentionally hidden at this layer.
+  static MessageType fromRCMessageType(RCIMIWMessageType type) {
+    switch (type) {
+      case RCIMIWMessageType.unknown:
+      case RCIMIWMessageType.custom:
+      case RCIMIWMessageType.recall:
+      case RCIMIWMessageType.userCustom:
+        return MessageType.unknown;
+      case RCIMIWMessageType.text:
+        return MessageType.text;
+      case RCIMIWMessageType.voice:
+        return MessageType.voice;
+      case RCIMIWMessageType.image:
+        return MessageType.image;
+      case RCIMIWMessageType.file:
+        return MessageType.file;
+      case RCIMIWMessageType.sight:
+        return MessageType.sight;
+      case RCIMIWMessageType.gif:
+        return MessageType.gif;
+      case RCIMIWMessageType.reference:
+        return MessageType.reference;
+      case RCIMIWMessageType.command:
+        return MessageType.command;
+      case RCIMIWMessageType.commandNotification:
+        return MessageType.commandNotification;
+      case RCIMIWMessageType.location:
+        return MessageType.location;
+      case RCIMIWMessageType.nativeCustom:
+        return MessageType.customMessage;
+      case RCIMIWMessageType.stream:
+        return MessageType.stream;
+      case RCIMIWMessageType.nativeCustomMedia:
+        return MessageType.customMediaMessage;
+      case RCIMIWMessageType.groupNotification:
+        return MessageType.groupNotification;
+      case RCIMIWMessageType.combineV2:
+        return MessageType.combine;
+    }
+  }
+
+  /// Converts a list of [MessageType] values to SDK message types.
+  static List<RCIMIWMessageType> toRCMessageTypes(
+    List<MessageType> messageTypes,
+  ) {
+    return messageTypes.map(toRCMessageType).toList();
   }
 
   /// Converts a native channel object to a Nexconn [BaseChannel] subclass based on the channel type.
