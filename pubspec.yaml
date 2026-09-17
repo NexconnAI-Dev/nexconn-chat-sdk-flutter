@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   # path: ^1.9.0
-  rongcloud_im_wrapper_plugin: ^5.32.8
+  rongcloud_im_wrapper_plugin: 5.32.8
     # path: plugins/rongcloud_im_wrapper_plugin-5.32.3
 
 dev_dependencies:
