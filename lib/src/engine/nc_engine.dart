@@ -326,6 +326,10 @@ class NCEngine {
   /// This must be called before any other SDK API. It creates the engine
   /// instance and binds all global event callbacks.
   static Future<void> initialize(InitParams params) async {
+    if (_engine != null) {
+      await destroy();
+    }
+
     if (Platform.isAndroid && params.enablePush == true) {
       try {
         await _nativeChannel.invokeMethod<void>('push:init', {
@@ -377,7 +381,7 @@ class NCEngine {
   ///
   /// After calling this, [initialize] must be called again before using the SDK.
   static Future<void> destroy() async {
-    _engine?.destroy();
+    await _engine?.destroy();
     _engine = null;
   }
 
@@ -401,7 +405,7 @@ class NCEngine {
     }
 
     if (Platform.isIOS) {
-      await engine.setModuleName('nexconnchatflutter', '26.2.8');
+      await engine.setModuleName('nexconnchatflutter', '26.2.9');
     }
 
     final code = await _engine!.connect(
@@ -537,6 +541,10 @@ class NCEngine {
     e.onRemoteMessageRecalled = (message) {
       _notifyMessageDeleted(message != null ? [message] : null);
     };
+
+    e.onMessagesModified = _notifyMessagesModified;
+
+    e.onModifiedMessageSyncCompleted = _notifyModifiedMessageSyncCompleted;
 
     e.onRemoteMessageExpansionUpdated = (metadata, message) {
       _notifyMessageMetadataUpdated(metadata, message);
@@ -806,7 +814,9 @@ class NCEngine {
     e.onRemoteUltraGroupMessageExpansionUpdated = (messages) {
       _notifyCommunityChannelMessageMetadataChanged(messages);
     };
-    e.onRemoteUltraGroupMessageModified = (messages) {};
+    // Ultra-group modification notifications carry the full message objects;
+    // expose them through the same handler as ordinary message modifications.
+    e.onRemoteUltraGroupMessageModified = _notifyMessagesModified;
     e.onRemoteUltraGroupMessageRecalled = (messages) {
       _notifyMessageDeleted(messages);
     };

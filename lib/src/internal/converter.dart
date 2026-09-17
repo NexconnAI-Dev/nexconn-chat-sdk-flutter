@@ -1,8 +1,11 @@
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 import '../enum/channel_type.dart';
 import '../enum/connection_status.dart';
+import '../enum/message_modify_status.dart';
 import '../enum/message_type.dart';
 import '../enum/no_disturb_level.dart';
+import '../enum/read_receipt_status.dart';
+import '../enum/read_receipt_version.dart';
 import '../enum/translate_strategy.dart';
 import '../error/nc_error.dart';
 import '../message/message.dart';
@@ -21,7 +24,9 @@ import '../message/command_message.dart';
 import '../message/command_notification_message.dart';
 import '../message/stream_message.dart';
 import '../message/group_notification_message.dart';
+import '../message/information_notification_message.dart';
 import '../message/unknown_message.dart';
+import '../model/edited_message_draft.dart';
 import '../channel/base_channel.dart';
 import '../channel/direct_channel.dart';
 import '../channel/group_channel.dart';
@@ -111,6 +116,47 @@ class Converter {
     return NCError(code: code ?? 0, message: errorMessage);
   }
 
+  /// Converts the SDK group read-receipt version without relying on enum
+  /// ordinals. Unknown future SDK values safely degrade to [ReadReceiptVersion.unknown].
+  static ReadReceiptVersion toReadReceiptVersion(
+    RCIMIWGroupReadReceiptVersion version,
+  ) {
+    const versions = <RCIMIWGroupReadReceiptVersion, ReadReceiptVersion>{
+      RCIMIWGroupReadReceiptVersion.unknown: ReadReceiptVersion.unknown,
+      RCIMIWGroupReadReceiptVersion.version1: ReadReceiptVersion.version1,
+      RCIMIWGroupReadReceiptVersion.version2: ReadReceiptVersion.version2,
+      RCIMIWGroupReadReceiptVersion.version4: ReadReceiptVersion.version4,
+      RCIMIWGroupReadReceiptVersion.version5: ReadReceiptVersion.version5,
+    };
+    return versions[version] ?? ReadReceiptVersion.unknown;
+  }
+
+  /// Converts an SDK message-modification state without relying on enum
+  /// ordinals. Returns `null` for SDK states unknown to this wrapper version.
+  static MessageModifyStatus? fromRCMessageModifyStatus(
+    RCIMIWMessageModifyStatus status,
+  ) {
+    const statuses = <RCIMIWMessageModifyStatus, MessageModifyStatus>{
+      RCIMIWMessageModifyStatus.success: MessageModifyStatus.success,
+      RCIMIWMessageModifyStatus.updating: MessageModifyStatus.updating,
+      RCIMIWMessageModifyStatus.failed: MessageModifyStatus.failed,
+    };
+    return statuses[status];
+  }
+
+  /// Converts a public read-receipt status to the corresponding SDK status
+  /// without coupling the two enum declaration orders.
+  static RCIMIWReadReceiptStatus toRCReadReceiptStatus(
+    MessageReadReceiptStatus status,
+  ) {
+    switch (status) {
+      case MessageReadReceiptStatus.read:
+        return RCIMIWReadReceiptStatus.read;
+      case MessageReadReceiptStatus.unread:
+        return RCIMIWReadReceiptStatus.unread;
+    }
+  }
+
   /// Converts a list of [ChannelType] values to SDK conversation types.
   static List<RCIMIWConversationType> toRCConversationTypes(
     List<ChannelType> channelTypes,
@@ -151,6 +197,8 @@ class Converter {
         return RCIMIWMessageType.nativeCustomMedia;
       case MessageType.groupNotification:
         return RCIMIWMessageType.groupNotification;
+      case MessageType.informationNotification:
+        return RCIMIWMessageType.informationNotification;
       case MessageType.combine:
         return RCIMIWMessageType.combineV2;
     }
@@ -194,6 +242,8 @@ class Converter {
         return MessageType.customMediaMessage;
       case RCIMIWMessageType.groupNotification:
         return MessageType.groupNotification;
+      case RCIMIWMessageType.informationNotification:
+        return MessageType.informationNotification;
       case RCIMIWMessageType.combineV2:
         return MessageType.combine;
     }
@@ -215,6 +265,10 @@ class Converter {
     final mentionedMeCount = conv.mentionedMeCount;
     final isPinned = conv.top;
     final draft = conv.draft;
+    final editedMessageDraft =
+        conv.editedMessageDraft == null
+            ? null
+            : EditedMessageDraft.fromRaw(conv.editedMessageDraft!);
     final latestMessage =
         conv.lastMessage != null ? fromRawMessage(conv.lastMessage!) : null;
     final notificationLevel =
@@ -237,6 +291,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -251,6 +306,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -265,6 +321,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -281,6 +338,7 @@ class Converter {
             mentionedMeCount: mentionedMeCount,
             isPinned: isPinned,
             draft: draft,
+            editedMessageDraft: editedMessageDraft,
             latestMessage: latestMessage,
             notificationLevel: notificationLevel,
             firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -295,6 +353,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -309,6 +368,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -324,6 +384,7 @@ class Converter {
           mentionedMeCount: mentionedMeCount,
           isPinned: isPinned,
           draft: draft,
+          editedMessageDraft: editedMessageDraft,
           latestMessage: latestMessage,
           notificationLevel: notificationLevel,
           firstUnreadMsgSendTime: firstUnreadMsgSendTime,
@@ -366,6 +427,9 @@ class Converter {
     if (raw is RCIMIWStreamMessage) return StreamMessage.fromRaw(raw);
     if (raw is RCIMIWGroupNotificationMessage) {
       return GroupNotificationMessage.fromRaw(raw);
+    }
+    if (raw is RCIMIWInformationNotificationMessage) {
+      return InformationNotificationMessage.fromRaw(raw);
     }
     if (raw is RCIMIWUnknownMessage) return UnknownMessage.fromRaw(raw);
     return UnknownMessage.wrap(raw);

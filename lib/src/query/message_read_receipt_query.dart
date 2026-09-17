@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 
 import '../channel/base_channel.dart';
@@ -41,10 +43,14 @@ class MessagesReadReceiptUsersQueryParams {
 /// Retrieves the list of users who have read or not read a specific message.
 /// Uses token-based pagination.
 class MessagesReadReceiptUsersQuery {
+  static const Duration _requestTimeout = Duration(seconds: 15);
+
   final MessagesReadReceiptUsersQueryParams _params;
   String? _pageToken;
   bool _loading = false;
   bool _hasMore = true;
+  int _totalCount = 0;
+  int _requestGeneration = 0;
 
   /// Creates a [MessagesReadReceiptUsersQuery] with the given [params].
   MessagesReadReceiptUsersQuery(this._params);
@@ -54,15 +60,25 @@ class MessagesReadReceiptUsersQuery {
 
   /// Loads the next page of read receipt users for the specified message.
   ///
-  /// Returns the operation ID, or `-1` if a request is already in progress.
+  /// Returns the operation status code, or `-1` if a request is already in progress.
   Future<int> loadNextPage(
     OperationHandler<PageResult<MessageReadReceiptUser>> handler,
-  ) {
+  ) async {
     if (_loading) {
       handler(null, NCError(code: 33103));
-      return Future.value(-1);
+      return -1;
+    }
+    if (!_hasMore) {
+      handler(PageResult(data: const [], totalCount: _totalCount), null);
+      return 0;
+    }
+    if (_params.pageSize < 1 || _params.pageSize > 100) {
+      handler(null, Converter.toNCError(34232));
+      return 34232;
     }
     _loading = true;
+    final requestGeneration = ++_requestGeneration;
+    Timer? deadline;
     final option = RCIMIWReadReceiptUsersOption.create(
       pageToken: _pageToken,
       pageCount: _params.pageSize,
@@ -74,35 +90,82 @@ class MessagesReadReceiptUsersQuery {
                   : RCIMIWReadReceiptOrder.descending),
       readStatus:
           _params.status != null
-              ? RCIMIWReadReceiptStatus.values[_params.status!.index]
+              ? Converter.toRCReadReceiptStatus(_params.status!)
               : null,
     );
-    return NCEngine.engine.getMessagesReadReceiptUsersByPageV5(
-      Converter.toRCConversationType(_params.channelIdentifier.channelType),
-      _params.channelIdentifier.channelId,
-      _params.channelIdentifier.subChannelId,
-      _params.messageId,
-      option,
-      callback: IRCIMIWGetMessagesReadReceiptUsersByPageV5Callback(
-        onSuccess: (t) {
-          _loading = false;
-          _pageToken = t?.pageToken;
-          _hasMore = _pageToken?.isNotEmpty == true;
-          handler(
-            PageResult(
-              data:
-                  t?.users?.map(MessageReadReceiptUser.fromRaw).toList() ??
-                  const [],
-              totalCount: t?.totalCount ?? 0,
-            ),
-            null,
-          );
-        },
-        onError: (code) {
-          _loading = false;
-          handler(null, Converter.toNCError(code));
-        },
+    var callbackDelivered = false;
+    void complete(PageResult<MessageReadReceiptUser>? page, NCError? error) {
+      if (callbackDelivered) return;
+      callbackDelivered = true;
+      deadline?.cancel();
+      if (requestGeneration == _requestGeneration) {
+        _loading = false;
+      }
+      handler(page, error);
+    }
+
+    deadline = Timer(
+      _requestTimeout,
+      () => complete(
+        null,
+        NCError(
+          code: -1,
+          message: 'Timed out while loading read receipt users',
+        ),
       ),
     );
+
+    try {
+      final operationId = await NCEngine.engine
+          .getMessagesReadReceiptUsersByPageV5(
+            Converter.toRCConversationType(
+              _params.channelIdentifier.channelType,
+            ),
+            _params.channelIdentifier.channelId,
+            _params.channelIdentifier.subChannelId,
+            _params.messageId,
+            option,
+            callback: IRCIMIWGetMessagesReadReceiptUsersByPageV5Callback(
+              onSuccess: (t) {
+                if (callbackDelivered) return;
+                final previousPageToken = _pageToken;
+                final nextPageToken = t?.pageToken;
+                _pageToken = nextPageToken;
+                final totalCount = t?.totalCount;
+                if (totalCount != null) {
+                  _totalCount = totalCount;
+                }
+                _hasMore =
+                    nextPageToken?.isNotEmpty == true &&
+                    nextPageToken != previousPageToken;
+                complete(
+                  PageResult(
+                    data:
+                        t?.users
+                            ?.map(MessageReadReceiptUser.fromRaw)
+                            .toList() ??
+                        const [],
+                    totalCount: _totalCount,
+                  ),
+                  null,
+                );
+              },
+              onError: (code) => complete(null, Converter.toNCError(code)),
+            ),
+          );
+      if (operationId != 0 && !callbackDelivered) {
+        complete(null, Converter.toNCError(operationId));
+      }
+      return operationId;
+    } catch (_) {
+      if (!callbackDelivered) {
+        callbackDelivered = true;
+        deadline.cancel();
+        if (requestGeneration == _requestGeneration) {
+          _loading = false;
+        }
+      }
+      rethrow;
+    }
   }
 }

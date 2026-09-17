@@ -22,6 +22,7 @@ class CommunitySubChannel extends BaseChannel {
     super.mentionedMeCount,
     super.isPinned,
     super.draft,
+    super.editedMessageDraft,
     super.latestMessage,
     super.notificationLevel,
     super.firstUnreadMsgSendTime,

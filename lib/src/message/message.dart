@@ -5,6 +5,7 @@ import '../enum/message_type.dart';
 import '../enum/message_direction.dart';
 import '../enum/sent_status.dart';
 import '../enum/received_status.dart';
+import '../model/message_modify_info.dart';
 import '../engine/nc_engine.dart';
 import '../internal/converter.dart';
 import '../internal/types.dart';
@@ -45,6 +46,22 @@ class Message {
   /// Creates the appropriate [Message] subclass from message data.
   static Message fromRaw(RCIMIWMessage raw) => Converter.fromRawMessage(raw);
 
+  RCIMIWMessage? get _successfulModifiedContent {
+    final info = raw.modifyInfo;
+    final content = info?.content;
+    if (raw.hasChanged != true ||
+        info?.status != RCIMIWMessageModifyStatus.success) {
+      return null;
+    }
+    if (raw is RCIMIWTextMessage && content is RCIMIWTextMessage) {
+      return content;
+    }
+    if (raw is RCIMIWReferenceMessage && content is RCIMIWReferenceMessage) {
+      return content;
+    }
+    return null;
+  }
+
   /// Serializes the message into a JSON-compatible `Map`.
   ///
   /// When [filterEmpty] is `true`, null values are removed while empty nested
@@ -75,6 +92,8 @@ class Message {
       'directedUserIds': directedUserIds,
       'needReceipt': needReceipt,
       'sentReceipt': sentReceipt,
+      'hasChanged': hasChanged,
+      'modifyInfo': modifyInfo?.toJson(),
       ...extraJson(),
     };
     return filterEmpty ? _compactJsonMap(json) : json;
@@ -111,11 +130,22 @@ class Message {
   }
 
   /// The channel identifier containing channel type, channel ID, and optional sub-channel ID.
-  ChannelIdentifier? get channelIdentifier => ChannelIdentifier(
-    channelType: Converter.fromRCConversationType(raw.conversationType!),
-    channelId: raw.targetId ?? '',
-    subChannelId: raw.channelId,
-  );
+  ///
+  /// Content-only messages nested in modification metadata do not carry a
+  /// delivery envelope, so this returns `null` when either required field is
+  /// absent.
+  ChannelIdentifier? get channelIdentifier {
+    final conversationType = raw.conversationType;
+    final targetId = raw.targetId;
+    if (conversationType == null || targetId == null || targetId.isEmpty) {
+      return null;
+    }
+    return ChannelIdentifier(
+      channelType: Converter.fromRCConversationType(conversationType),
+      channelId: targetId,
+      subChannelId: raw.channelId,
+    );
+  }
 
   /// The type of channel (e.g., private, group, system) this message belongs to.
   ChannelType? get channelType =>
@@ -182,20 +212,28 @@ class Message {
           : null;
 
   /// The sender's user information embedded in the message.
-  UserInfo? get userInfo =>
-      raw.userInfo != null ? UserInfo.fromRaw(raw.userInfo!) : null;
+  UserInfo? get userInfo {
+    final value = _successfulModifiedContent?.userInfo ?? raw.userInfo;
+    return value == null ? null : UserInfo.fromRaw(value);
+  }
 
   /// The @mention information associated with this message.
-  MentionedInfo? get mentionedInfo =>
-      raw.mentionedInfo != null
-          ? MentionedInfo.fromRaw(raw.mentionedInfo!)
-          : null;
+  ///
+  /// A successful edit owns the complete mention payload. In particular, a
+  /// null value on the edited content means that previous mentions were
+  /// removed and must not fall back to the original message.
+  MentionedInfo? get mentionedInfo {
+    final source = _successfulModifiedContent ?? raw;
+    return source.mentionedInfo == null
+        ? null
+        : MentionedInfo.fromRaw(source.mentionedInfo!);
+  }
 
   /// The server-side extra information attached to this message.
-  String? get extra => raw.extra;
+  String? get extra => (_successfulModifiedContent ?? raw).extra;
 
   /// Sets the server-side extra information.
-  set extra(String? v) => raw.extra = v;
+  set extra(String? v) => (_successfulModifiedContent ?? raw).extra = v;
 
   /// The local-only extra information stored on the device.
   String? get localExtra => raw.localExtra;
@@ -230,6 +268,22 @@ class Message {
 
   /// Whether a read receipt has been sent for this message.
   bool? get sentReceipt => raw.sentReceipt;
+
+  /// Updates the local read-receipt submission state.
+  ///
+  /// The V5 receipt API does not return a replacement message, so UI layers
+  /// use this setter after a successful submission to avoid reporting the same
+  /// visible message again during the current message object's lifetime.
+  set sentReceipt(bool? v) => raw.sentReceipt = v;
+
+  /// Whether this message has been modified.
+  bool? get hasChanged => raw.hasChanged;
+
+  /// Information about the latest modification of this message.
+  MessageModifyInfo? get modifyInfo =>
+      raw.modifyInfo == null
+          ? null
+          : MessageModifyInfo.fromRaw(raw.modifyInfo!);
 
   /// Updates the metadata (expansion) key-value pairs for this message on the server.
   ///

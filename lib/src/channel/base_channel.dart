@@ -6,6 +6,7 @@ import '../model/push_config.dart';
 import '../enum/message_operation_policy.dart';
 import '../enum/message_type.dart';
 import '../enum/no_disturb_level.dart';
+import '../enum/reference_message_status.dart';
 import '../enum/translate_strategy.dart';
 import '../internal/converter.dart';
 import '../internal/types.dart';
@@ -26,6 +27,7 @@ import '../message/custom_media_message.dart';
 import '../model/message_identifier.dart';
 import '../model/read_receipt_info.dart';
 import '../model/message_read_receipt_users_result.dart';
+import '../model/edited_message_draft.dart';
 import '../model/search_channel_result.dart';
 import '../query/channel_list_query.dart';
 import '../query/message_query.dart';
@@ -155,6 +157,66 @@ class GetMessagesReadReceiptByUsersParams {
   });
 }
 
+/// Parameters for modifying an existing message.
+class ModifyMessageParams {
+  /// The server-generated ID of the original message.
+  final String messageId;
+
+  /// The replacement message content created for the same channel.
+  final Message message;
+
+  /// The original message, when available. This lets channel implementations
+  /// preserve server identity and delivery metadata for callbacks that only
+  /// return a status code (for example, Ultra Group).
+  final Message? originalMessage;
+
+  ModifyMessageParams({
+    required this.messageId,
+    required this.message,
+    this.originalMessage,
+  });
+}
+
+/// Result returned for one refreshed reference message.
+class ReferenceMessageRefreshResult {
+  /// The unique ID requested from the SDK.
+  final String? messageId;
+
+  /// The refreshed reference message, when found.
+  final Message? message;
+
+  /// The per-message result code.
+  final int? code;
+
+  const ReferenceMessageRefreshResult({
+    this.messageId,
+    this.message,
+    this.code,
+  });
+
+  static ReferenceMessageRefreshResult fromRaw(RCIMIWMessageResult raw) =>
+      ReferenceMessageRefreshResult(
+        messageId: raw.messageUId,
+        message: raw.message == null ? null : Message.fromRaw(raw.message!),
+        code: raw.code,
+      );
+}
+
+/// Callback container for the two-stage reference-message refresh operation.
+class RefreshReferenceMessagesCallback {
+  final void Function(List<ReferenceMessageRefreshResult> results)?
+  onLocalResults;
+  final void Function(List<ReferenceMessageRefreshResult> results)?
+  onRemoteResults;
+  final ErrorHandler? onError;
+
+  const RefreshReferenceMessagesCallback({
+    this.onLocalResults,
+    this.onRemoteResults,
+    this.onError,
+  });
+}
+
 /// Parameters for inserting messages into the local database of a channel.
 class InsertMessagesParams {
   /// The list of message parameters describing the messages to create and insert.
@@ -240,12 +302,17 @@ class SendMessageParams {
   /// When set, only the specified users will receive this message.
   final List<String>? directedUserIds;
 
+  /// Optional send-time override for the message read-receipt flag.
+  /// When null, [messageParams.needReceipt] is used.
+  final bool? needReceipt;
+
   /// Creates params with the given [messageParams], optional [pushConfig],
   /// and optional [directedUserIds].
   SendMessageParams({
     required this.messageParams,
     this.pushConfig,
     this.directedUserIds,
+    this.needReceipt,
   });
 }
 
@@ -261,8 +328,16 @@ class SendMediaMessageParams {
   /// Optional push notification configuration for the message.
   final PushConfig? pushConfig;
 
+  /// Optional send-time override for the message read-receipt flag.
+  /// When null, [messageParams.needReceipt] is used.
+  final bool? needReceipt;
+
   /// Creates params with the given [messageParams] and optional [pushConfig].
-  SendMediaMessageParams({required this.messageParams, this.pushConfig});
+  SendMediaMessageParams({
+    required this.messageParams,
+    this.pushConfig,
+    this.needReceipt,
+  });
 }
 
 /// Base class for all channels.
@@ -275,6 +350,9 @@ class SendMediaMessageParams {
 /// [OpenChannel], [CommunityChannel], or [SystemChannel] when channel-specific
 /// behavior is needed.
 class BaseChannel {
+  static const int _maxReadReceiptBatchSize = 100;
+  static const int _maxReferenceMessageRefreshCount = 20;
+
   /// The type of this channel.
   final ChannelType channelType;
 
@@ -295,6 +373,9 @@ class BaseChannel {
 
   /// The saved draft text for this channel, if any.
   final String? draft;
+
+  /// The draft saved while editing an existing message, if any.
+  final EditedMessageDraft? editedMessageDraft;
 
   /// The most recent message in this channel.
   final Message? latestMessage;
@@ -321,6 +402,7 @@ class BaseChannel {
     this.mentionedMeCount,
     this.isPinned,
     this.draft,
+    this.editedMessageDraft,
     this.latestMessage,
     this.notificationLevel,
     this.firstUnreadMsgSendTime,
@@ -342,6 +424,7 @@ class BaseChannel {
     'mentionedMeCount': mentionedMeCount,
     'isPinned': isPinned,
     'draft': draft,
+    'editedMessageDraft': editedMessageDraft?.toJson(),
     'latestMessage': latestMessage?.toJson(),
     'notificationLevel': notificationLevel?.name,
     'firstUnreadMsgSendTime': firstUnreadMsgSendTime,
@@ -350,6 +433,21 @@ class BaseChannel {
   };
 
   RCIMIWEngine get _engine => NCEngine.engine;
+
+  /// Creates a message content object for this channel without sending it.
+  ///
+  /// This is primarily useful when preparing replacement content for
+  /// [modifyMessage]. The returned message carries the current channel
+  /// identifier and all shared options from [params].
+  Future<Message?> createMessage(MessageParams params) async {
+    final identifier = channelIdentifier;
+    final raw = await _createRawMessage(
+      Converter.toRCConversationType(identifier.channelType),
+      identifier.subChannelId,
+      params,
+    );
+    return raw == null ? null : Message.fromRaw(raw);
+  }
 
   Future<RCIMIWMessage?> _createRawMessage(
     RCIMIWConversationType type,
@@ -455,6 +553,7 @@ class BaseChannel {
           mp.searchableWords;
     }
     raw?.mentionedInfo = mp.mentionedInfo?.toRaw();
+    raw?.needReceipt = mp.needReceipt;
     return raw;
   }
 
@@ -683,6 +782,259 @@ class BaseChannel {
     );
   }
 
+  /// Modifies an existing message in this channel.
+  ///
+  /// Native SDKs can return a usable message together with a non-zero callback
+  /// code. In that case [handler] receives both the message and the error.
+  Future<int> modifyMessage(
+    ModifyMessageParams params,
+    OperationHandler<Message> handler,
+  ) async {
+    final identifier = channelIdentifier;
+    var completed = false;
+    void complete(Message? message, NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(message, error);
+    }
+
+    if (identifier.channelType == ChannelType.community) {
+      final replacement = params.message;
+      final code = await _engine.modifyUltraGroupMessage(
+        params.messageId,
+        replacement.raw,
+        callback: IRCIMIWModifyUltraGroupMessageCallback(
+          onUltraGroupMessageModified:
+              (code) => complete(
+                code == 0 ? _prepareModifiedMessage(params) : null,
+                Converter.toNCError(code),
+              ),
+        ),
+      );
+      if (code != 0) {
+        complete(null, Converter.toNCError(code));
+      }
+      return code;
+    }
+    final code = await _engine.modifyMessageWithParams(
+      RCIMIWModifyMessageParams.create(
+        messageUId: params.messageId,
+        message: params.message.raw,
+      ),
+      callback: IRCIMIWModifyMessageCallback(
+        onMessageModified:
+            (code, message) => complete(
+              message == null
+                  ? (code == 0 ? _prepareModifiedMessage(params) : null)
+                  : _prepareModifiedMessage(
+                    params,
+                    result: Message.fromRaw(message),
+                  ),
+              Converter.toNCError(code),
+            ),
+      ),
+    );
+    if (code != 0) {
+      complete(null, Converter.toNCError(code));
+    }
+    return code;
+  }
+
+  /// Restores the original message envelope without replacing edited content.
+  ///
+  /// Native edit callbacks can contain a temporary content message with
+  /// missing or placeholder identity fields. A modified message must keep the
+  /// identity and delivery state of the original message, while fields owned
+  /// by the edited content (notably `mentionedInfo`) remain untouched so a
+  /// null value can explicitly clear the previous value.
+  Message _prepareModifiedMessage(
+    ModifyMessageParams params, {
+    Message? result,
+  }) {
+    final replacement = result ?? params.message;
+    final raw = replacement.raw;
+    final original = params.originalMessage?.raw;
+    raw.messageUId ??= params.messageId;
+    if (original == null) return replacement;
+
+    raw.conversationType = original.conversationType;
+    raw.messageType = original.messageType;
+    raw.targetId = original.targetId;
+    raw.channelId = original.channelId;
+    raw.messageId = original.messageId;
+    raw.messageUId = original.messageUId ?? params.messageId;
+    raw.sentTime = original.sentTime;
+    raw.receivedTime = original.receivedTime;
+    raw.senderUserId = original.senderUserId;
+    raw.direction = original.direction;
+    raw.sentStatus = original.sentStatus;
+    raw.receivedStatus = original.receivedStatus;
+    raw.receivedStatusInfo = original.receivedStatusInfo;
+    raw.offLine = original.offLine;
+    raw.groupReadReceiptInfo = original.groupReadReceiptInfo;
+    raw.userInfo ??= original.userInfo;
+    raw.pushOptions ??= original.pushOptions;
+    raw.extra ??= original.extra;
+    raw.localExtra = original.localExtra;
+    raw.expansion = original.expansion;
+    raw.canIncludeExpansion = original.canIncludeExpansion;
+    raw.directedUserIds = original.directedUserIds;
+    raw.needReceipt = original.needReceipt;
+    raw.sentReceipt = original.sentReceipt;
+    raw.destructDuration ??= original.destructDuration;
+    raw.auditInfo ??= original.auditInfo;
+    _preserveStrongestReferenceStatus(params.originalMessage, replacement);
+    return replacement;
+  }
+
+  void _preserveStrongestReferenceStatus(
+    Message? original,
+    Message replacement,
+  ) {
+    if (original is! ReferenceMessage || replacement is! ReferenceMessage) {
+      return;
+    }
+    final originalStatus = original.referenceMessageStatus;
+    final replacementStatus = replacement.referenceMessageStatus;
+    if (_referenceStatusRank(originalStatus) >
+        _referenceStatusRank(replacementStatus)) {
+      replacement.referenceMessageStatus = originalStatus;
+    }
+  }
+
+  int _referenceStatusRank(ReferenceMessageStatus? status) {
+    return switch (status) {
+      null => -1,
+      ReferenceMessageStatus.defaultValue => 0,
+      ReferenceMessageStatus.modified => 1,
+      ReferenceMessageStatus.recalled => 2,
+      ReferenceMessageStatus.deleted => 3,
+    };
+  }
+
+  /// Refreshes up to 20 reference messages, returning local results first and
+  /// remote results later for local misses.
+  Future<int> refreshReferenceMessages(
+    List<String> messageIds,
+    RefreshReferenceMessagesCallback callback,
+  ) async {
+    if (messageIds.isEmpty ||
+        messageIds.length > _maxReferenceMessageRefreshCount) {
+      callback.onError?.call(Converter.toNCError(34232));
+      return Future.value(34232);
+    }
+    var errorDelivered = false;
+    void deliverError(int? code) {
+      if (errorDelivered) return;
+      errorDelivered = true;
+      callback.onError?.call(Converter.toNCError(code ?? -1));
+    }
+
+    final identifier = channelIdentifier;
+    List<ReferenceMessageRefreshResult> wrap(
+      List<RCIMIWMessageResult>? values,
+    ) =>
+        values?.map(ReferenceMessageRefreshResult.fromRaw).toList() ?? const [];
+    final code = await _engine.refreshReferenceMessageWithParams(
+      RCIMIWRefreshReferenceMessageParams.create(
+        conversationType: Converter.toRCConversationType(
+          identifier.channelType,
+        ),
+        targetId: identifier.channelId,
+        channelId: identifier.subChannelId,
+        messageUIds: messageIds,
+      ),
+      callback: IRCIMIWRefreshReferenceMessageCallback(
+        onLocalMessageBlock:
+            (values) => callback.onLocalResults?.call(wrap(values)),
+        onRemoteMessageBlock:
+            (values) => callback.onRemoteResults?.call(wrap(values)),
+        onError: deliverError,
+      ),
+    );
+    if (code != 0) {
+      deliverError(code);
+    }
+    return code;
+  }
+
+  /// Saves a draft for an in-progress message edit.
+  Future<int> saveEditedMessageDraft(
+    EditedMessageDraft draft,
+    ErrorHandler handler,
+  ) async {
+    final identifier = channelIdentifier;
+    var completed = false;
+    void complete(NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(error);
+    }
+
+    final code = await _engine.saveEditedMessageDraft(
+      Converter.toRCConversationType(identifier.channelType),
+      identifier.channelId,
+      identifier.subChannelId,
+      draft.raw,
+      callback: IRCIMIWCompletionCallback(
+        onCompleted: (code) => complete(Converter.toNCError(code)),
+      ),
+    );
+    if (code != 0) complete(Converter.toNCError(code));
+    return code;
+  }
+
+  /// Retrieves the saved draft for an in-progress message edit.
+  Future<int> getEditedMessageDraft(
+    OperationHandler<EditedMessageDraft> handler,
+  ) async {
+    final identifier = channelIdentifier;
+    var completed = false;
+    void complete(EditedMessageDraft? draft, NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(draft, error);
+    }
+
+    final code = await _engine.getEditedMessageDraft(
+      Converter.toRCConversationType(identifier.channelType),
+      identifier.channelId,
+      identifier.subChannelId,
+      callback: IRCIMIWGetEditedMessageDraftCallback(
+        onSuccess:
+            (draft) => complete(
+              draft == null ? null : EditedMessageDraft.fromRaw(draft),
+              null,
+            ),
+        onError: (code) => complete(null, Converter.toNCError(code)),
+      ),
+    );
+    if (code != 0) complete(null, Converter.toNCError(code));
+    return code;
+  }
+
+  /// Clears the saved draft for an in-progress message edit.
+  Future<int> clearEditedMessageDraft(ErrorHandler handler) async {
+    final identifier = channelIdentifier;
+    var completed = false;
+    void complete(NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(error);
+    }
+
+    final code = await _engine.clearEditedMessageDraft(
+      Converter.toRCConversationType(identifier.channelType),
+      identifier.channelId,
+      identifier.subChannelId,
+      callback: IRCIMIWCompletionCallback(
+        onCompleted: (code) => complete(Converter.toNCError(code)),
+      ),
+    );
+    if (code != 0) complete(Converter.toNCError(code));
+    return code;
+  }
+
   /// Sends a non-media message in this channel.
   ///
   /// The SDK internally creates the message from [params.messageParams] using
@@ -708,7 +1060,7 @@ class BaseChannel {
     final raw = await _createRawMessage(type, subId, params.messageParams);
     if (raw == null) return -1;
     raw.pushOptions = params.pushConfig?.toRaw();
-    raw.needReceipt = params.messageParams.needReceipt;
+    raw.needReceipt = params.needReceipt ?? params.messageParams.needReceipt;
 
     final isDirected = (params.directedUserIds ?? []).isNotEmpty;
     if (!isDirected) {
@@ -773,7 +1125,7 @@ class BaseChannel {
             as RCIMIWMediaMessage?;
     if (raw == null) return -1;
     raw.pushOptions = params.pushConfig?.toRaw();
-    raw.needReceipt = params.messageParams.needReceipt;
+    raw.needReceipt = params.needReceipt ?? params.messageParams.needReceipt;
 
     RCIMIWSendMediaMessageListener? rawHandler;
     if (handler != null) {
@@ -930,18 +1282,31 @@ class BaseChannel {
   Future<int> sendReadReceiptResponse(
     List<String> messageIds,
     ErrorHandler handler,
-  ) {
+  ) async {
+    if (messageIds.isEmpty || messageIds.length > _maxReadReceiptBatchSize) {
+      handler(Converter.toNCError(34232));
+      return Future.value(34232);
+    }
     final identifier = channelIdentifier;
-    return _engine.sendReadReceiptResponseV5(
+    var completed = false;
+    void complete(NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(error);
+    }
+
+    final code = await _engine.sendReadReceiptResponseV5(
       Converter.toRCConversationType(identifier.channelType),
       identifier.channelId,
       identifier.subChannelId,
       messageIds,
       callback: IRCIMIWSendReadReceiptResponseV5Callback(
-        onSuccess: () => handler(Converter.toNCError(0)),
-        onError: (code) => handler(Converter.toNCError(code)),
+        onSuccess: () => complete(Converter.toNCError(0)),
+        onError: (code) => complete(Converter.toNCError(code)),
       ),
     );
+    if (code != 0) complete(Converter.toNCError(code));
+    return code;
   }
 
   /// Retrieves read receipt information for the specified message IDs.
@@ -951,22 +1316,35 @@ class BaseChannel {
   Future<int> getMessageReadReceiptInfo(
     List<String> messageIds,
     OperationHandler<List<ReadReceiptInfo>> handler,
-  ) {
+  ) async {
+    if (messageIds.isEmpty || messageIds.length > _maxReadReceiptBatchSize) {
+      handler(null, Converter.toNCError(34232));
+      return Future.value(34232);
+    }
     final identifier = channelIdentifier;
-    return _engine.getMessageReadReceiptInfoV5(
+    var completed = false;
+    void complete(List<ReadReceiptInfo>? value, NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(value, error);
+    }
+
+    final code = await _engine.getMessageReadReceiptInfoV5(
       Converter.toRCConversationType(identifier.channelType),
       identifier.channelId,
       identifier.subChannelId,
       messageIds,
       callback: IRCIMIWGetMessageReadReceiptInfoV5Callback(
         onSuccess:
-            (t) => handler(
+            (t) => complete(
               t?.map((e) => ReadReceiptInfo.fromRaw(e)).toList(),
               null,
             ),
-        onError: (code) => handler(null, Converter.toNCError(code)),
+        onError: (code) => complete(null, Converter.toNCError(code)),
       ),
     );
+    if (code != 0) complete(null, Converter.toNCError(code));
+    return code;
   }
 
   /// Retrieves read receipt information for messages identified by [MessageIdentifier]s.
@@ -976,15 +1354,28 @@ class BaseChannel {
   static Future<int> getMessageReadReceiptInfoByIdentifiers(
     List<MessageIdentifier> identifiers,
     OperationHandler<List<ReadReceiptInfo>> handler,
-  ) {
-    return NCEngine.engine.getMessageReadReceiptInfoV5ByIdentifiers(
+  ) async {
+    if (identifiers.isEmpty || identifiers.length > _maxReadReceiptBatchSize) {
+      handler(null, Converter.toNCError(34232));
+      return Future.value(34232);
+    }
+    var completed = false;
+    void complete(List<ReadReceiptInfo>? value, NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(value, error);
+    }
+
+    final code = await NCEngine.engine.getMessageReadReceiptInfoV5ByIdentifiers(
       identifiers.map((e) => e.toRaw()).toList(),
       callback: IRCIMIWGetMessageReadReceiptInfoV5Callback(
         onSuccess:
-            (t) => handler(t?.map(ReadReceiptInfo.fromRaw).toList(), null),
-        onError: (code) => handler(null, Converter.toNCError(code)),
+            (t) => complete(t?.map(ReadReceiptInfo.fromRaw).toList(), null),
+        onError: (code) => complete(null, Converter.toNCError(code)),
       ),
     );
+    if (code != 0) complete(null, Converter.toNCError(code));
+    return code;
   }
 
   /// Retrieves read receipt details for a specific message, filtered by user IDs.
@@ -994,9 +1385,21 @@ class BaseChannel {
   Future<int> getMessagesReadReceiptByUsers(
     GetMessagesReadReceiptByUsersParams params,
     OperationHandler<MessageReadReceiptUsersResult> handler,
-  ) {
+  ) async {
+    if (params.userIds.isEmpty ||
+        params.userIds.length > _maxReadReceiptBatchSize) {
+      handler(null, Converter.toNCError(34232));
+      return Future.value(34232);
+    }
     final identifier = channelIdentifier;
-    return NCEngine.engine.getMessagesReadReceiptByUsersV5(
+    var completed = false;
+    void complete(MessageReadReceiptUsersResult? value, NCError? error) {
+      if (completed) return;
+      completed = true;
+      handler(value, error);
+    }
+
+    final code = await NCEngine.engine.getMessagesReadReceiptByUsersV5(
       Converter.toRCConversationType(identifier.channelType),
       identifier.channelId,
       identifier.subChannelId,
@@ -1004,13 +1407,15 @@ class BaseChannel {
       params.userIds,
       callback: IRCIMIWGetMessagesReadReceiptByUsersV5Callback(
         onSuccess:
-            (t) => handler(
+            (t) => complete(
               t != null ? MessageReadReceiptUsersResult.fromRaw(t) : null,
               null,
             ),
-        onError: (code) => handler(null, Converter.toNCError(code)),
+        onError: (code) => complete(null, Converter.toNCError(code)),
       ),
     );
+    if (code != 0) complete(null, Converter.toNCError(code));
+    return code;
   }
 
   /// Retrieves the tags associated with this channel.

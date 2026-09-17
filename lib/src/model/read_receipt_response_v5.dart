@@ -1,18 +1,7 @@
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 import '../channel/base_channel.dart' show ChannelIdentifier;
 import '../internal/converter.dart';
-
-/// Represents a user's read receipt information within a response.
-class MessageReadReceiptUser {
-  /// The user identifier of the reader.
-  final String? userId;
-
-  /// The timestamp when the user read the message (in milliseconds).
-  final int? timestamp;
-
-  /// Creates a [MessageReadReceiptUser].
-  const MessageReadReceiptUser({this.userId, this.timestamp});
-}
+import 'message_read_receipt_user.dart';
 
 /// Represents a read receipt response for a specific message.
 class MessageReadReceiptResponse {
@@ -26,10 +15,17 @@ class MessageReadReceiptResponse {
   /// The channel identifier where the message was sent.
   ChannelIdentifier? get channelIdentifier {
     final type = _raw.conversationType;
-    if (type == null) return null;
+    final targetId = _raw.targetId;
+    if (type == null ||
+        (type != RCIMIWConversationType.private &&
+            type != RCIMIWConversationType.group) ||
+        targetId == null ||
+        targetId.isEmpty) {
+      return null;
+    }
     return ChannelIdentifier(
       channelType: Converter.fromRCConversationType(type),
-      channelId: _raw.targetId ?? '',
+      channelId: targetId,
       subChannelId: _raw.channelId?.isEmpty == true ? null : _raw.channelId,
     );
   }
@@ -48,14 +44,7 @@ class MessageReadReceiptResponse {
 
   /// The list of users with their read receipt details.
   List<MessageReadReceiptUser>? get users =>
-      _raw.users
-          ?.map(
-            (u) => MessageReadReceiptUser(
-              userId: u.userId,
-              timestamp: u.timestamp,
-            ),
-          )
-          .toList();
+      _raw.users?.map(MessageReadReceiptUser.fromRaw).toList();
 
   /// The associated SDK object for advanced usage.
   RCIMIWReadReceiptResponseV5 get raw => _raw;

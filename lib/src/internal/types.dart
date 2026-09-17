@@ -2,7 +2,8 @@ import '../error/nc_error.dart';
 
 /// Generic callback for operations that return a result or an error.
 ///
-/// [result] contains the successful value and is `null` on failure.
+/// [result] contains the value returned by the SDK and may be `null`.
+/// Some APIs can return a partial value together with a non-zero error.
 /// [error] contains the error information. On success, `[error]?.code` is `0`.
 typedef OperationHandler<T> = void Function(T? result, NCError? error);
 

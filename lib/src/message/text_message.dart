@@ -27,11 +27,22 @@ class TextMessage extends Message {
 
   RCIMIWTextMessage get _textRaw => raw as RCIMIWTextMessage;
 
+  RCIMIWTextMessage get _effectiveTextRaw {
+    final info = raw.modifyInfo;
+    final content = info?.content;
+    if (raw.hasChanged == true &&
+        info?.status == RCIMIWMessageModifyStatus.success &&
+        content is RCIMIWTextMessage) {
+      return content;
+    }
+    return _textRaw;
+  }
+
   /// The text content of this message.
-  String? get text => _textRaw.text;
+  String? get text => _effectiveTextRaw.text;
 
   /// Sets the text content of this message.
-  set text(String? v) => _textRaw.text = v;
+  set text(String? v) => _effectiveTextRaw.text = v;
 
   @override
   Map<String, dynamic> extraJson() => {'text': text};

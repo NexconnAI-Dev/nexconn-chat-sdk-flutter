@@ -1,3 +1,7 @@
+## 26.2.9
+
+- Raise Android compileSdk to 36 to satisfy dependency AAR metadata requirements.
+
 ## 26.2.8
 
 - Rename public combined-message type from `combineV2` to `combine`.

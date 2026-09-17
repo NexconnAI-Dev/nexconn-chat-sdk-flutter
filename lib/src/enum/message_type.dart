@@ -47,4 +47,10 @@ enum MessageType {
 
   /// Combined (merged/forwarded) message containing multiple messages.
   combine,
+
+  /// Informational tip message displayed in the conversation timeline.
+  ///
+  /// Kept after the pre-existing values so adding 5.44.0 does not change the
+  /// ordinal of [combine] for older callers that persisted enum indices.
+  informationNotification,
 }
