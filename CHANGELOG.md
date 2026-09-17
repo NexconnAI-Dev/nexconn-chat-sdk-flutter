@@ -1,6 +1,6 @@
-## 26.2.9
+## 26.2.10
 
-- Raise Android compileSdk to 36 to satisfy dependency AAR metadata requirements.
+- Update dependencies.
 
 ## 26.2.8
 

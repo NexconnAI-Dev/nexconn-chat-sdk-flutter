@@ -44,10 +44,9 @@ class HDVoiceMessage extends MediaMessage {
   set duration(int? v) => _voiceRaw.duration = v;
 
   /// Speech-to-text metadata attached by the SDK when conversion is available.
-  SpeechToTextInfo? get speechToTextInfo =>
-      _voiceRaw.speechToTextInfo != null
-          ? SpeechToTextInfo.fromRaw(_voiceRaw.speechToTextInfo!)
-          : null;
+  SpeechToTextInfo? get speechToTextInfo => _voiceRaw.speechToTextInfo != null
+      ? SpeechToTextInfo.fromRaw(_voiceRaw.speechToTextInfo!)
+      : null;
 
   /// Requests speech-to-text conversion for this HD voice message.
   ///

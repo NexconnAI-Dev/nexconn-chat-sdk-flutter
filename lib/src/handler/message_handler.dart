@@ -37,19 +37,6 @@ class MessageDeletedEvent {
   const MessageDeletedEvent({this.messages});
 }
 
-/// Event fired when one or more messages are modified.
-class MessagesModifiedEvent {
-  /// The latest message values supplied by the server.
-  final List<Message>? messages;
-
-  const MessagesModifiedEvent({this.messages});
-}
-
-/// Event fired after offline message modifications finish synchronizing.
-class ModifiedMessageSyncCompletedEvent {
-  const ModifiedMessageSyncCompletedEvent();
-}
-
 /// Event fired when message metadata is updated.
 class MessageMetadataUpdatedEvent {
   /// The updated metadata key-value pairs.
@@ -185,13 +172,6 @@ typedef OnMessageReceived = void Function(MessageReceivedEvent event);
 /// Callback invoked when messages are deleted.
 typedef OnMessageDeleted = void Function(MessageDeletedEvent event);
 
-/// Callback invoked when messages are modified.
-typedef OnMessagesModified = void Function(MessagesModifiedEvent event);
-
-/// Callback invoked when offline message modification sync completes.
-typedef OnModifiedMessageSyncCompleted =
-    void Function(ModifiedMessageSyncCompletedEvent event);
-
 /// Callback invoked when message metadata is updated.
 typedef OnMessageMetadataUpdated =
     void Function(MessageMetadataUpdatedEvent event);
@@ -243,12 +223,6 @@ class MessageHandler {
   /// Called when messages are deleted for all users.
   final OnMessageDeleted? onMessageDeleted;
 
-  /// Called when messages are modified locally or remotely.
-  final OnMessagesModified? onMessagesModified;
-
-  /// Called when offline message modifications finish synchronizing.
-  final OnModifiedMessageSyncCompleted? onModifiedMessageSyncCompleted;
-
   /// Called when message metadata is updated.
   final OnMessageMetadataUpdated? onMessageMetadataUpdated;
 
@@ -284,8 +258,6 @@ class MessageHandler {
   MessageHandler({
     this.onMessageReceived,
     this.onMessageDeleted,
-    this.onMessagesModified,
-    this.onModifiedMessageSyncCompleted,
     this.onMessageMetadataUpdated,
     this.onMessageMetadataDeleted,
     this.onCommunityChannelMessageMetadataChanged,

@@ -37,21 +37,6 @@ void _notifyMessageDeleted(List<RCIMIWMessage>? messages) {
   );
 }
 
-void _notifyMessagesModified(List<RCIMIWMessage>? messages) {
-  final wrapped = messages?.map(Converter.fromRawMessage).toList();
-  NCEngine._messageHandlers.notify(
-    (h) => h.onMessagesModified?.call(MessagesModifiedEvent(messages: wrapped)),
-  );
-}
-
-void _notifyModifiedMessageSyncCompleted() {
-  NCEngine._messageHandlers.notify(
-    (h) => h.onModifiedMessageSyncCompleted?.call(
-      const ModifiedMessageSyncCompletedEvent(),
-    ),
-  );
-}
-
 void _notifyMessageMetadataUpdated(Map? metadata, RCIMIWMessage? message) {
   final wrapped = message != null ? Converter.fromRawMessage(message) : null;
   NCEngine._messageHandlers.notify(

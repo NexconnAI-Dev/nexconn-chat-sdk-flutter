@@ -1,7 +1,6 @@
 import 'package:rongcloud_im_wrapper_plugin/rongcloud_im_wrapper_plugin.dart';
 
 import '../enum/read_receipt_status.dart';
-import '../internal/converter.dart';
 
 /// Options for querying users who have read or not read a specific message.
 ///
@@ -40,7 +39,7 @@ class MessageReadReceiptUsersOption {
                   : RCIMIWReadReceiptOrder.descending),
       readStatus:
           readStatus != null
-              ? Converter.toRCReadReceiptStatus(readStatus!)
+              ? RCIMIWReadReceiptStatus.values[readStatus!.index]
               : null,
     );
   }
